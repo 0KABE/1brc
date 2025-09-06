@@ -6,13 +6,14 @@
 
 #include "structs.h"
 
+#include <cassert>
 #include <climits>
-#include <cstdint>
 #include <cstring>
 #include <immintrin.h>
 #include <span>
 #include <string_view>
 #include <thread>
+#include <utils/file_memory_map.h>
 
 constexpr uint64_t get_delimiter_mask(char c) {
   uint64_t v = 0;
