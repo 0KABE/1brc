@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="Home Ubuntu (6ac58b43-e6c2-41cb-822e-4e7440aa39cc)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.PepBxhcPhk/1brc" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-home-ubuntu" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-home-ubuntu" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-relwithdebinfo-home-ubuntu" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
