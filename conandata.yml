@@ -2,4 +2,5 @@
 # To keep your changes, remove these comment lines, but the plugin won't be able to modify your requirements
 
 requirements:
+  - "benchmark/1.9.0"
   - "gtest/1.15.0"
