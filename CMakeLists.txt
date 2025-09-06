@@ -18,6 +18,9 @@ target_link_libraries(${PROJECT_NAME}_parse_station_v2 benchmark::benchmark_main
 add_executable(${PROJECT_NAME}_parse_station_v3 src/parse_station_v3_main.cpp)
 target_link_libraries(${PROJECT_NAME}_parse_station_v3 benchmark::benchmark_main)
 
-add_executable(benchmark benchmark/parse_number_test.cpp)
+add_executable(benchmark
+        benchmark/parse_number_test.cpp
+        benchmark/parse_station_test.cpp
+)
 target_link_libraries(benchmark benchmark::benchmark_main)
 target_include_directories(benchmark PRIVATE src)

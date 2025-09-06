@@ -19,7 +19,7 @@ constexpr uint64_t get_delimiter_mask(char c) {
   return v;
 }
 
-int parse_number_v1(const std::span<const char> span) {
+inline int parse_number_v1(const std::span<const char> span) {
   const uint64_t v = *reinterpret_cast<const uint64_t *>(span.data());
   constexpr auto sign_mask = get_delimiter_mask('-');
   const int negative = (static_cast<int>(v ^ sign_mask) & 0xFF) - 1;
@@ -30,7 +30,7 @@ int parse_number_v1(const std::span<const char> span) {
   return negative ? -number : number;
 }
 
-std::tuple<Temperature, int> parse_number_v2(const std::span<const char> span) {
+inline std::tuple<Temperature, int> parse_number_v2(const std::span<const char> span) {
   const uint64_t v = *reinterpret_cast<const uint64_t *>(span.data());
   const int64_t negative = static_cast<int64_t>(~v) << 59 >> 63;
   uint64_t pure_number = v >> (CHAR_BIT * -negative);
@@ -47,7 +47,7 @@ std::tuple<Temperature, int> parse_number_v2(const std::span<const char> span) {
   return {result, n};
 }
 
-std::tuple<Temperature, int> parse_number_v3(const std::span<const char> span) {
+inline std::tuple<Temperature, int> parse_number_v3(const std::span<const char> span) {
   // 1. 一次性加载8个字节，这是所有SWAR技巧的基础
   const uint64_t v = *reinterpret_cast<const uint64_t *>(span.data());
 
