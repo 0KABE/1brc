@@ -9,7 +9,6 @@
 #include <sys/mman.h>
 
 #include <cassert>
-#include <unistd.h>
 
 struct FileMemoryMap {
   const int fd;
