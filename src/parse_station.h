@@ -4,18 +4,18 @@
 
 #pragma once
 
+#include <immintrin.h>
+
+#include <cassert>
+#include <cstring>
+#include <span>
+#include <string_view>
+
 #include "parse_number.h"
 #include "structs.h"
 #include "utils/file_memory_map.h"
-#include <cassert>
-#include <cstring>
-#include <immintrin.h>
-#include <span>
-#include <string_view>
-#include <thread>
 
-inline std::tuple<std::string_view, Temperature>
-ParseStation_V1(const char *&ptr) {
+inline std::tuple<std::string_view, Temperature> ParseStation_V1(const char *&ptr) {
   std::string_view name;
   {
     const char *end = ptr;
@@ -58,8 +58,7 @@ std::tuple<std::string_view, Temperature> ParseStation_V2(const char *&ptr) {
     const __m256i semicolon_vec = _mm256_set1_epi8(';');
 
     // 从当前指针位置加载32字节数据（非对齐加载）
-    const __m256i chunk =
-        _mm256_loadu_si256(reinterpret_cast<const __m256i *>(ptr));
+    const __m256i chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i *>(ptr));
 
     // 并行比较32个字节，看哪个字节等于';'
     const __m256i comparison_mask = _mm256_cmpeq_epi8(chunk, semicolon_vec);
@@ -82,7 +81,7 @@ std::tuple<std::string_view, Temperature> ParseStation_V2(const char *&ptr) {
 
     // 处理负号
     const int sign_multiplier = (*p == '-') ? -1 : 1;
-    p += (*p == '-'); // 如果是负号，指针前进一位
+    p += (*p == '-');  // 如果是负号，指针前进一位
 
     // 一次性读取最多4个字节（例如 "12.3" 或 "9.8"）
     // memcpy可以避免非对齐访问问题，且通常会被编译器优化为一次读取
@@ -93,21 +92,21 @@ std::tuple<std::string_view, Temperature> ParseStation_V2(const char *&ptr) {
     // 检查第二个字节是否是'.' (e.g., "9.8")
     const int dot_pos = (four_bytes >> 8) & 0xFF;
 
-    if (dot_pos == '.') { // 格式: d.d (例如 9.8)
+    if (dot_pos == '.') {  // 格式: d.d (例如 9.8)
       // 提取个位数和十分位数
       const int d1 = (four_bytes & 0xFF) - '0';
       const int d2 = (four_bytes >> 16) & 0xFF - '0';
       temperature = (d1 * 10 + d2) * sign_multiplier;
-      ptr = p + 3; // 跳过 "d.d"
-    } else {       // 格式: dd.d (例如 12.3)
+      ptr = p + 3;  // 跳过 "d.d"
+    } else {        // 格式: dd.d (例如 12.3)
       // 提取十位数、个位数和十分位数
       const int d1 = (four_bytes & 0xFF) - '0';
       const int d2 = (four_bytes >> 8) & 0xFF - '0';
       const int d3 = (four_bytes >> 24) & 0xFF - '0';
       temperature = (d1 * 100 + d2 * 10 + d3) * sign_multiplier;
-      ptr = p + 4; // 跳过 "dd.d"
+      ptr = p + 4;  // 跳过 "dd.d"
     }
-    ptr++; // 跳过最后的换行符 '\n'
+    ptr++;  // 跳过最后的换行符 '\n'
   }
 
   return {name, temperature};
@@ -115,16 +114,14 @@ std::tuple<std::string_view, Temperature> ParseStation_V2(const char *&ptr) {
 
 inline int AVX256Find(const std::span<const char> span, const char target) {
   const __m256i semicolon_vec = _mm256_set1_epi8(target);
-  const __m256i chunk =
-      _mm256_loadu_si256(reinterpret_cast<const __m256i *>(span.data()));
+  const __m256i chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i *>(span.data()));
   const __m256i comparison_mask = _mm256_cmpeq_epi8(chunk, semicolon_vec);
   const uint32_t mask = _mm256_movemask_epi8(comparison_mask);
   const int semicolon_pos = _tzcnt_u32(mask);
   return semicolon_pos;
 }
 
-inline std::tuple<std::string_view, Temperature>
-ParseStation_V3(std::span<const char> &span) {
+inline std::tuple<std::string_view, Temperature> ParseStation_V3(std::span<const char> &span) {
   // assume the station name is less than 32 bytes
   const int semicolon_pos = AVX256Find(span, ';');
   auto name = std::string_view(span.data(), semicolon_pos);

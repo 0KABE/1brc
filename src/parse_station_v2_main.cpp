@@ -2,10 +2,11 @@
 // Created by Chen, WenTao on 2025/8/19.
 //
 
+#include <benchmark/benchmark.h>
+
 #include "parse_station.h"
 #include "utils/env.h"
 #include "utils/file_memory_map.h"
-#include <benchmark/benchmark.h>
 
 int main() {
   const auto &env = Env::Instance();

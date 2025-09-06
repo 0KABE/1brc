@@ -4,14 +4,13 @@
 
 #pragma once
 
-#include "structs.h"
-
-#include "parse_station.h"
-#include "utils/file_memory_map.h"
-#include "utils/hash_map.h"
-#include <cassert>
 #include <span>
 #include <thread>
+
+#include "parse_station.h"
+#include "structs.h"
+#include "utils/file_memory_map.h"
+#include "utils/hash_map.h"
 
 struct Worker {
   unsigned index;

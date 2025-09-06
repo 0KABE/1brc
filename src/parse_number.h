@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include "structs.h"
-
-#include "utils/file_memory_map.h"
 #include <climits>
 #include <span>
 #include <thread>
+
+#include "structs.h"
+#include "utils/file_memory_map.h"
 
 constexpr uint64_t get_delimiter_mask(char c) {
   uint64_t v = 0;
@@ -24,9 +24,8 @@ int parse_number_v1(const std::span<const char> span) {
   constexpr auto sign_mask = get_delimiter_mask('-');
   const int negative = (static_cast<int>(v ^ sign_mask) & 0xFF) - 1;
   const uint64_t pure_number = (v >> 8 * negative) & 0x0F000F0F;
-  const int number = (pure_number & 0x0F) * 100 +
-                     ((pure_number & 0x0F00) >> 8) * 10 +
-                     ((pure_number & 0x0F000000) >> 8 * 3);
+  const int number =
+      (pure_number & 0x0F) * 100 + ((pure_number & 0x0F00) >> 8) * 10 + ((pure_number & 0x0F000000) >> 8 * 3);
 
   return negative ? -number : number;
 }
@@ -84,8 +83,7 @@ std::tuple<Temperature, int> parse_number_v3(const std::span<const char> span) {
 
   // 8. 无分支应用符号。 (val ^ 0) - 0 = val; (val ^ -1) - (-1) = ~val + 1 =
   // -val
-  const int result =
-      static_cast<int>((number ^ is_negative_mask) - is_negative_mask);
+  const int result = static_cast<int>((number ^ is_negative_mask) - is_negative_mask);
 
   // 9. 计算消耗的字符数。
   //    基础长度是 "dd.d" (4个字符)。

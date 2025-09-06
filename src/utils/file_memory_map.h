@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <filesystem>
 #include <sys/file.h>
 #include <sys/mman.h>
 
 #include <cassert>
+#include <filesystem>
 
 struct FileMemoryMap {
   const int fd;
@@ -22,9 +22,7 @@ struct FileMemoryMap {
     assert(std::filesystem::exists(path));
   }
 
-  explicit operator std::span<const char>() const {
-    return {static_cast<const char *>(address), size};
-  }
+  explicit operator std::span<const char>() const { return {static_cast<const char *>(address), size}; }
 
   ~FileMemoryMap() {
     assert(munmap(address, size) == 0);

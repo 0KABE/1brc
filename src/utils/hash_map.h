@@ -4,14 +4,12 @@
 
 #pragma once
 
-#include "structs.h"
-
-#include "utils/file_memory_map.h"
 #include <cassert>
-#include <immintrin.h>
-#include <span>
 #include <string_view>
 #include <thread>
+
+#include "structs.h"
+#include "utils/file_memory_map.h"
 
 struct HashMap {
   constexpr static size_t Size = 81920;
@@ -30,8 +28,7 @@ struct HashMap {
     assert(index < Size);
 
     size_t pos = index;
-    for (size_t i = 0; i < Size && bucket[pos].used;
-         pos = (index + ++i) % Size) {
+    for (size_t i = 0; i < Size && bucket[pos].used; pos = (index + ++i) % Size) {
       if (bucket[pos].key == key) {
         return bucket[pos].value;
       }
