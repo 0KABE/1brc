@@ -8,7 +8,7 @@
 #include <string_view>
 #include <thread>
 
-#include "structs.h"
+#include "parser/structs.h"
 #include "utils/file_memory_map.h"
 
 struct HashMap {

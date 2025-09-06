@@ -8,8 +8,8 @@
 #include <span>
 #include <thread>
 
-#include "structs.h"
 #include "utils/file_memory_map.h"
+#include "structs.h"
 
 constexpr uint64_t get_delimiter_mask(char c) {
   uint64_t v = 0;
