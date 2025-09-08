@@ -7,12 +7,12 @@
 #include <span>
 #include <thread>
 
-#include "../parser/parse_station.h"
-#include "../parser/structs.h"
+#include "parser/parse_station.h"
+#include "parser/structs.h"
 #include "utils/file_memory_map.h"
 #include "utils/hash_map.h"
 
-struct Worker {
+struct MutexFreeWorkerV1 {
   unsigned index;
   const FileMemoryMap &file;
   std::span<char> span;
