@@ -4,4 +4,4 @@
 
 #include <iostream>
 
-int main() { std::cout << "main..." << std::endl; }
+int main() { std::cout << "benchmark..." << std::endl; }
