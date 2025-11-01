@@ -7,9 +7,11 @@
 #include <string>
 
 struct Env {
-  std::string input_file;
+  constexpr static auto kThread = "THREADS";
+  constexpr static auto kInputFile = "INPUT_FILE";
 
-  Env() : input_file(getenv("INPUT_FILE")) {}
+  std::string input_file{getenv(kInputFile)};
+  int threads{std::stoi(getenv(kThread) ? getenv(kThread) : "1")};
 
   static const Env &Instance() {
     static Env instance;

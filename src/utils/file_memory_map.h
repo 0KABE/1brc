@@ -11,9 +11,11 @@
 #include <filesystem>
 
 struct FileMemoryMap {
-  const int fd;
-  const size_t size;
-  void *const address;
+  int fd{-1};
+  size_t size{0};
+  void *address{nullptr};
+
+  FileMemoryMap() = default;
 
   explicit FileMemoryMap(const std::filesystem::path &path)
       : fd(open(path.c_str(), O_RDONLY)),
@@ -22,10 +24,31 @@ struct FileMemoryMap {
     assert(std::filesystem::exists(path));
   }
 
+  FileMemoryMap(FileMemoryMap &&other) noexcept {
+    if (this != &other) {
+      *this = std::move(other);
+    }
+  }
+
+  FileMemoryMap &operator=(FileMemoryMap &&other) noexcept {
+    FileMemoryMap empty;
+    Swap(empty);
+    Swap(other);
+    return *this;
+  }
+
   explicit operator std::span<const char>() const { return {static_cast<const char *>(address), size}; }
 
+  void Swap(FileMemoryMap &other) {
+    std::swap(fd, other.fd);
+    std::swap(size, other.size);
+    std::swap(address, other.address);
+  }
+
   ~FileMemoryMap() {
-    assert(munmap(address, size) == 0);
-    assert(close(fd) == 0);
+    if (fd != -1) {
+      assert(munmap(address, size) == 0);
+      assert(close(fd) == 0);
+    }
   }
 };

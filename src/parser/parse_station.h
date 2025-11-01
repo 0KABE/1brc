@@ -11,9 +11,9 @@
 #include <span>
 #include <string_view>
 
-#include "utils/file_memory_map.h"
 #include "parse_number.h"
 #include "structs.h"
+#include "utils/file_memory_map.h"
 
 inline std::tuple<std::string_view, Temperature> ParseStation_V1(const char *&ptr) {
   std::string_view name;
@@ -48,7 +48,7 @@ inline std::tuple<std::string_view, Temperature> ParseStation_V1(const char *&pt
   return {name, temperature};
 }
 
-std::tuple<std::string_view, Temperature> ParseStation_V2(const char *&ptr) {
+inline std::tuple<std::string_view, Temperature> ParseStation_V2(const char *&ptr) {
   std::string_view name;
   int temperature;
 
