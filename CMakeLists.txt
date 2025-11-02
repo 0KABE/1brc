@@ -14,6 +14,13 @@ add_executable(${PROJECT_NAME}_main src/main.cpp)
 target_include_directories(${PROJECT_NAME}_main PRIVATE src)
 target_link_libraries(${PROJECT_NAME}_main benchmark::benchmark_main)
 
+add_executable(${PROJECT_NAME}_test
+        test/main.cpp
+        test/parser_test.cpp
+)
+target_include_directories(${PROJECT_NAME}_test PRIVATE src)
+target_link_libraries(${PROJECT_NAME}_test GTest::gtest)
+
 add_executable(${PROJECT_NAME}_benchmark
         benchmark/main.cpp
 )
