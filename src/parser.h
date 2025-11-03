@@ -17,6 +17,12 @@ inline Entity BasicParseOnce(std::span<const char> &span) {
       break;
     }
   }
+
+  const bool negative = span.front() == '-';
+  if (negative) {
+    span = span.subspan(1);
+  }
+
   for (size_t i = 0; i < span.size(); ++i) {
     if (span[i] == '.') {
       assert(i + 1 < span.size());
@@ -25,6 +31,9 @@ inline Entity BasicParseOnce(std::span<const char> &span) {
       break;
     }
     entity.temperature = entity.temperature * 10 + span[i] - '0';
+  }
+  if (negative) {
+    entity.temperature = -entity.temperature;
   }
   return entity;
 }
