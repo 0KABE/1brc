@@ -10,18 +10,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(-march=native)
 
-add_executable(${PROJECT_NAME}_main src/main.cpp)
-target_include_directories(${PROJECT_NAME}_main PRIVATE src)
-target_link_libraries(${PROJECT_NAME}_main benchmark::benchmark_main)
+# Core Lib
+add_library(${PROJECT_NAME}_core
+        src/parser.cpp
+)
+target_include_directories(${PROJECT_NAME}_core PUBLIC src)
 
+# Executor
+add_executable(${PROJECT_NAME}_main src/main.cpp)
+target_link_libraries(${PROJECT_NAME}_main ${PROJECT_NAME}_core benchmark::benchmark_main)
+
+# Test Code
 add_executable(${PROJECT_NAME}_test
         test/main.cpp
         test/parser_test.cpp
 )
 target_include_directories(${PROJECT_NAME}_test PRIVATE src)
-target_link_libraries(${PROJECT_NAME}_test GTest::gtest)
+target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME}_core GTest::gtest)
 
+# Benchmark
 add_executable(${PROJECT_NAME}_benchmark
-        benchmark/main.cpp
+        benchmark/basic_benchmark.cpp
+        benchmark/parser_benchmark.cpp
 )
-target_link_libraries(${PROJECT_NAME}_benchmark benchmark::benchmark_main)
+target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME}_core benchmark::benchmark_main)
