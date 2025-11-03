@@ -20,7 +20,9 @@ static void BM_BasicParseOnce(benchmark::State& state) {
   std::uniform_int_distribution temp_int_dist(-99, 99);
   std::uniform_int_distribution temp_float_dist(0, 9);
 
-  for (int i = 0; i < 10; ++i) {
+  const auto lines = state.range(0);
+
+  for (int i = 0; i < lines; ++i) {
     const int name_len = name_len_dist(gen);
     for (int j = 0; j < name_len; ++j) {
       data += char_dist(gen);
@@ -40,4 +42,4 @@ static void BM_BasicParseOnce(benchmark::State& state) {
   }
 }
 
-BENCHMARK(BM_BasicParseOnce);
+BENCHMARK(BM_BasicParseOnce)->RangeMultiplier(10)->Range(10, 1e6);
