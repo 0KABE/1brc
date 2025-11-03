@@ -96,5 +96,3 @@ BENCHMARK_TEMPLATE(BM_UnorderedMap, int32_t);
 BENCHMARK_TEMPLATE(BM_UnorderedMap, int64_t);
 BENCHMARK_TEMPLATE(BM_UnorderedMap, std::string);
 BENCHMARK_TEMPLATE(BM_UnorderedMap, std::string_view);
-
-BENCHMARK_MAIN();
