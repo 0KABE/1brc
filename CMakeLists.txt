@@ -4,6 +4,7 @@ project(1brc)
 
 find_package(GTest)
 find_package(benchmark)
+find_package(fmt)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,6 +16,7 @@ add_library(${PROJECT_NAME}_core
         src/parser.cpp
 )
 target_include_directories(${PROJECT_NAME}_core PUBLIC src)
+target_link_libraries(${PROJECT_NAME}_core PUBLIC fmt::fmt)
 
 # Executor
 add_executable(${PROJECT_NAME}_main src/main.cpp)
