@@ -3,18 +3,26 @@
 // Templated benchmark for addition
 template <typename T>
 static void BM_Addition(benchmark::State& state) {
-  T i = 3;
+  struct Entity {
+    std::string_view name;
+    T temperature;
+  };
+  Entity entity{};
   for (auto _ : state) {
-    benchmark::DoNotOptimize(i += 2);
+    benchmark::DoNotOptimize(entity.temperature += 3);
   }
 }
 
 // Templated benchmark for timing
 template <typename T>
 static void BM_Timing(benchmark::State& state) {
-  T i = 3;
+  struct Entity {
+    std::string_view name;
+    T temperature;
+  };
+  Entity entity{.temperature = 3};
   for (auto _ : state) {
-    benchmark::DoNotOptimize(i *= i);
+    benchmark::DoNotOptimize(entity.temperature *= 3);
   }
 }
 
