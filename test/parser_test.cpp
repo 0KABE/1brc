@@ -39,7 +39,7 @@ TEST(Parser, BasicParseOnce) {
   };
 
   for (auto [span, expect] : v) {
-    const auto [name, temperature] = BasicParseOnce(span);
+    const auto [name, temperature] = ParseOnce_Base(span);
     EXPECT_EQ(name, expect.name);
     EXPECT_EQ(temperature, expect.temperature);
     EXPECT_TRUE(span.empty());

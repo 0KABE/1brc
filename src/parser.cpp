@@ -4,7 +4,7 @@
 
 #include "parser.h"
 
-Entity BasicParseOnce(std::span<const char>& span) {
+Entity ParseOnce_Base(std::span<const char>& span) {
   Entity entity{};
   for (size_t i = 0; i < span.size(); ++i) {
     if (span[i] == ';') {

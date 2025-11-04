@@ -8,6 +8,6 @@
 
 #include "data.h"
 
-Entity BasicParseOnce(std::span<const char> &span);
+Entity ParseOnce_Base(std::span<const char> &span);
 
 Entity ParseOnceV1(std::span<const char> &span);
