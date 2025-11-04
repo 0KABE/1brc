@@ -11,7 +11,7 @@
 #include "parser.h"
 
 // benchmark for BasicParseOnce with random generated data in runtime
-static void BM_BasicParseOnce(benchmark::State& state) {
+static void BM_ParseOnce_Base(benchmark::State& state) {
   std::string data;
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -37,9 +37,9 @@ static void BM_BasicParseOnce(benchmark::State& state) {
   for (auto _ : state) {
     std::span<const char> span(data);
     while (!span.empty()) {
-      benchmark::DoNotOptimize(BasicParseOnce(span));
+      benchmark::DoNotOptimize(ParseOnce_Base(span));
     }
   }
 }
 
-BENCHMARK(BM_BasicParseOnce)->RangeMultiplier(10)->Range(10, 1e6);
+BENCHMARK(BM_ParseOnce_Base)->RangeMultiplier(10)->Range(10, 1e6);
