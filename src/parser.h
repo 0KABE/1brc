@@ -12,4 +12,4 @@ Entity ParseOnce_Base(std::span<const char> &span);
 
 Entity ParseOnceV1(std::span<const char> &span);
 
-uint64_t FilterZeroByte(uint64_t x);
+uint64_t FindFirstZeroByte(uint64_t x);

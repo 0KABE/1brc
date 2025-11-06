@@ -48,7 +48,7 @@ constexpr uint64_t Mask(const char c) {
   return mask;
 }
 
-uint64_t FilterZeroByte(const uint64_t x) {
+uint64_t FindFirstZeroByte(const uint64_t x) {
   constexpr uint64_t magicM = 0x7F7F7F7F7F7F7F7F;
   constexpr uint64_t magicH = 0x8080808080808080;
 
@@ -66,7 +66,7 @@ uint64_t FilterZeroByte(const uint64_t x) {
 
   const auto result = ~(r & magicH) & magicH;
 
-  return result;
+  return std::countr_zero(result) / 8 + 1;
 }
 
 Entity ParseOnceV1(std::span<const char>& span) {
