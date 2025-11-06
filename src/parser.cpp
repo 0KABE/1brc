@@ -4,6 +4,8 @@
 
 #include "parser.h"
 
+#include <fmt/format.h>
+
 Entity ParseOnce_Base(std::span<const char>& span) {
   Entity entity{};
   size_t index = 0;
@@ -37,4 +39,38 @@ Entity ParseOnce_Base(std::span<const char>& span) {
   return entity;
 }
 
-Entity ParseOnceV1(std::span<const char>& span) {}
+constexpr uint64_t Mask(const char c) {
+  constexpr auto bytes = sizeof(uint64_t);
+  uint64_t mask = 0;
+  for (auto i = 0; i < bytes; ++i) {
+    mask = (mask << CHAR_BIT) | c;
+  }
+  return mask;
+}
+
+uint64_t FilterZeroByte(const uint64_t x) {
+  constexpr uint64_t magicM = 0x7F7F7F7F7F7F7F7F;
+  constexpr uint64_t magicH = 0x8080808080808080;
+
+  // v & m1
+  // 0x00 & 0x7F = 0x00
+  // (0x01 ~ 0x7F) & 0x7F = (0x01 ~ 0x7F)
+  // (0x80 ~ 0xFF) & 0x7F = (0x00 ~ 0x7F)
+  //
+  // v & m1 + m1 => (0x7F ~ 0xFE)
+  const auto t = (x & magicM) + magicM;
+
+  // 0x00
+  // 0x80 ~ 0xFF
+  const auto r = t | x;
+
+  const auto result = ~(r & magicH) & magicH;
+
+  return result;
+}
+
+Entity ParseOnceV1(std::span<const char>& span) {
+  constexpr auto m = Mask('-');
+  fmt::println("mask: {}", m);
+  return {};
+}
