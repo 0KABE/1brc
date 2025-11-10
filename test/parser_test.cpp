@@ -87,7 +87,15 @@ TEST(Parser, BasicParseOnce) {
 // }
 
 TEST(Bits, FindFirstZeroByte) {
-  EXPECT_EQ(FindFirstZeroByte(0x1234567812345678), 9);
-  EXPECT_EQ(FindFirstZeroByte(0x1234007812345678), 6);
-  EXPECT_EQ(FindFirstZeroByte(0x9ABCDEFF00005678), 3);
+  EXPECT_EQ(FindFirstZeroByte(0x1234567812345678), 8);
+  EXPECT_EQ(FindFirstZeroByte(0x1234007812345678), 5);
+  EXPECT_EQ(FindFirstZeroByte(0x9ABCDEFF00005678), 2);
+  EXPECT_EQ(FindFirstZeroByte(0x9ABCDEFF01005678), 2);
+  EXPECT_EQ(FindFirstZeroByte(0x9ABCDEFF00015678), 3);
+
+  EXPECT_EQ(FindFirstZeroByte_Base(0x1234567812345678), 8);
+  EXPECT_EQ(FindFirstZeroByte_Base(0x1234007812345678), 5);
+  EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF00005678), 2);
+  EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF01005678), 2);
+  EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF00015678), 3);
 }

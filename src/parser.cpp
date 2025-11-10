@@ -6,6 +6,9 @@
 
 #include <fmt/format.h>
 
+#include <bit>
+#include <cstdint>
+
 Entity ParseOnce_Base(std::span<const char>& span) {
   Entity entity{};
   size_t index = 0;
@@ -48,25 +51,19 @@ constexpr uint64_t Mask(const char c) {
   return mask;
 }
 
-uint64_t FindFirstZeroByte(const uint64_t x) {
-  constexpr uint64_t magicM = 0x7F7F7F7F7F7F7F7F;
-  constexpr uint64_t magicH = 0x8080808080808080;
+int FindFirstZeroByte(const uint64_t x) {
+  const uint64_t zero_mask = (x - 0x0101010101010101) & ~x & 0x8080808080808080;
+  return std::countr_zero(zero_mask) / 8;
+}
 
-  // v & m1
-  // 0x00 & 0x7F = 0x00
-  // (0x01 ~ 0x7F) & 0x7F = (0x01 ~ 0x7F)
-  // (0x80 ~ 0xFF) & 0x7F = (0x00 ~ 0x7F)
-  //
-  // v & m1 + m1 => (0x7F ~ 0xFE)
-  const auto t = (x & magicM) + magicM;
-
-  // 0x00
-  // 0x80 ~ 0xFF
-  const auto r = t | x;
-
-  const auto result = ~(r & magicH) & magicH;
-
-  return std::countr_zero(result) / 8 + 1;
+int FindFirstZeroByte_Base(uint64_t x) {
+  for (auto i = 0; i < sizeof(uint64_t); ++i) {
+    if (!(x & 0xFF)) {
+      return i;
+    }
+    x >>= CHAR_BIT;
+  }
+  return sizeof(uint64_t);
 }
 
 Entity ParseOnceV1(std::span<const char>& span) {
