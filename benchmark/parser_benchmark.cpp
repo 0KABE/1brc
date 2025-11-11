@@ -50,4 +50,4 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
 
 BENCHMARK(BM_ParseOnce_Base)->Repetitions(5)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Repetitions(10)->DisplayAggregatesOnly();

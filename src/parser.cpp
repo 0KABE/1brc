@@ -51,7 +51,7 @@ constexpr uint64_t Mask(const char c) {
   return mask;
 }
 
-int FindFirstZeroByte(const uint64_t x) {
+int FindFirstZeroByte_SWAR(const uint64_t x) {
   const uint64_t zero_mask = (x - 0x0101010101010101) & ~x & 0x8080808080808080;
   return std::countr_zero(zero_mask) / 8;
 }
