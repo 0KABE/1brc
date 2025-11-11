@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 
 #include <bit>
+#include <cassert>
 #include <cstdint>
 
 Entity ParseOnce_Base(std::span<const char>& span) {
@@ -67,7 +68,31 @@ int FindFirstZeroByte_Base(uint64_t x) {
 }
 
 Entity ParseOnceV1(std::span<const char>& span) {
-  constexpr auto m = Mask('-');
-  fmt::println("mask: {}", m);
+  // find ';'
+  {
+    constexpr auto mask_semicolon = Mask(';');
+    int size = 0;
+    while (size < span.size()) {
+      const auto n = *reinterpret_cast<const uint64_t*>(&span[size]);
+      if (const auto index = FindFirstZeroByte_SWAR(n ^ mask_semicolon); index < sizeof(uint64_t)) {
+        size += index;
+        fmt::println("station: {}", std::string_view{span.first(size)});
+        span = span.subspan(size + 1);
+      }
+      size += sizeof(uint64_t);
+    }
+  }
+
+  // find '\n'
+  {
+    constexpr auto mask_newline = Mask('\n');
+    // read only the next 64 bits in span as uint64_t, find the location of the newline
+    // the new line must be in the next 64 bits
+    const auto n = *reinterpret_cast<const uint64_t*>(span.data());
+    const auto index = FindFirstZeroByte_SWAR(n ^ mask_newline);
+    assert(index < sizeof(uint64_t));
+    fmt::println("temperature: {}", std::string_view{span.first(index)});
+    span = span.subspan(index + 1);
+  }
   return {};
 }

@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include <cassert>
+
 #include <span>
 
 #include "data.h"
