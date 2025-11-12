@@ -99,3 +99,12 @@ TEST(Bits, FindFirstZeroByte) {
   EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF01005678), 2);
   EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF00015678), 3);
 }
+
+TEST(Bits, ParseNumber) {
+  EXPECT_EQ(ParseNumber_Base("12.1"), 121);
+  EXPECT_EQ(ParseNumber_Base("-12.1"), -121);
+  EXPECT_EQ(ParseNumber_Base("0.1"), 1);
+  EXPECT_EQ(ParseNumber_Base("-0.1"), -1);
+  EXPECT_EQ(ParseNumber_Base("99.9"), 999);
+  EXPECT_EQ(ParseNumber_Base("-99.9"), -999);
+}

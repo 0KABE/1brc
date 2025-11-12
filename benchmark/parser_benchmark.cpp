@@ -51,6 +51,21 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
   }
 }
 
+template <auto Func>
+static void BM_ParseNumber_Templated(benchmark::State& state) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution digit_dist(0, 9);
+
+  auto data = fmt::format("-{}{}.{}\n", digit_dist(gen), digit_dist(gen), digit_dist(gen));
+  const std::span<const char> span(data);
+
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(Func(span));
+  }
+}
+
 BENCHMARK(BM_ParseOnce_Base)->Repetitions(5)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Repetitions(10)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_Base)->Repetitions(10)->DisplayAggregatesOnly();
