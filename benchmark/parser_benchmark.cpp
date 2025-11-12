@@ -38,8 +38,11 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution num_dist(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
-  const std::array data{num_dist(gen), num_dist(gen), num_dist(gen), num_dist(gen), num_dist(gen),
-                        num_dist(gen), num_dist(gen), num_dist(gen), num_dist(gen), num_dist(gen)};
+
+  std::array<uint64_t, 1000> data{};
+  for (auto& val : data) {
+    val = num_dist(gen);
+  }
 
   for (auto _ : state) {
     for (const auto num : data) {
