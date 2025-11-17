@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <span>
+#include <tuple>
 
 #include "data.h"
 
@@ -37,7 +38,7 @@ constexpr int FindFirstZeroByte_SWAR(const uint64_t x) {
   return std::countr_zero(zero_mask) / 8;
 }
 
-constexpr int ParseNumber_Base(std::span<const char> span) {
+constexpr std::tuple<int, int> ParseNumber_Base(const std::span<const char> span) {
   int number = 0;
   int index = 0;
 
@@ -47,9 +48,9 @@ constexpr int ParseNumber_Base(std::span<const char> span) {
   for (auto c = span[index]; span[index++] != '.'; c = span[index]) {
     number = number * 10 + c - '0';
   }
-  number = number * 10 + span[index] - '0';
+  number = number * 10 + span[index++] - '0';
   number = negative ? -number : number;
-  return number;
+  return {index, number};
 }
 
 constexpr int ParseNumber_SWAR(std::span<const char> span) { return 0; }

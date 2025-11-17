@@ -101,10 +101,11 @@ TEST(Bits, FindFirstZeroByte) {
 }
 
 TEST(Bits, ParseNumber) {
-  EXPECT_EQ(ParseNumber_Base("12.1"), 121);
-  EXPECT_EQ(ParseNumber_Base("-12.1"), -121);
-  EXPECT_EQ(ParseNumber_Base("0.1"), 1);
-  EXPECT_EQ(ParseNumber_Base("-0.1"), -1);
-  EXPECT_EQ(ParseNumber_Base("99.9"), 999);
-  EXPECT_EQ(ParseNumber_Base("-99.9"), -999);
+  using Result = std::tuple<int, int>;
+  EXPECT_EQ(ParseNumber_Base("12.1"), Result(4, 121));
+  EXPECT_EQ(ParseNumber_Base("-12.1"), Result(5, -121));
+  EXPECT_EQ(ParseNumber_Base("0.1"), Result(3, 1));
+  EXPECT_EQ(ParseNumber_Base("-0.1"), Result(4, -1));
+  EXPECT_EQ(ParseNumber_Base("99.9"), Result(4, 999));
+  EXPECT_EQ(ParseNumber_Base("-99.9"), Result(5, -999));
 }
