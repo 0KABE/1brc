@@ -108,4 +108,11 @@ TEST(Bits, ParseNumber) {
   EXPECT_EQ(ParseNumber_Base("-0.1"), Result(4, -1));
   EXPECT_EQ(ParseNumber_Base("99.9"), Result(4, 999));
   EXPECT_EQ(ParseNumber_Base("-99.9"), Result(5, -999));
+
+  EXPECT_EQ(ParseNumber_SWAR("12.1"), Result(4, 121));
+  EXPECT_EQ(ParseNumber_SWAR("-12.1"), Result(5, -121));
+  EXPECT_EQ(ParseNumber_SWAR("0.1"), Result(3, 1));
+  EXPECT_EQ(ParseNumber_SWAR("-0.1"), Result(4, -1));
+  EXPECT_EQ(ParseNumber_SWAR("99.9"), Result(4, 999));
+  EXPECT_EQ(ParseNumber_SWAR("-99.9"), Result(5, -999));
 }

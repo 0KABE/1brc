@@ -5,6 +5,7 @@
 #pragma once
 
 #include <climits>
+#include <cstring>
 #include <span>
 #include <tuple>
 
@@ -38,6 +39,12 @@ constexpr int FindFirstZeroByte_SWAR(const uint64_t x) {
   return std::countr_zero(zero_mask) / 8;
 }
 
+constexpr uint64_t ReadAsUint64(const std::span<const char> span) {
+  uint64_t result = 0;
+  std::memcpy(&result, span.data(), sizeof(uint64_t));
+  return result;
+}
+
 constexpr std::tuple<int, int> ParseNumber_Base(const std::span<const char> span) {
   int number = 0;
   int index = 0;
@@ -53,4 +60,15 @@ constexpr std::tuple<int, int> ParseNumber_Base(const std::span<const char> span
   return {index, number};
 }
 
-constexpr int ParseNumber_SWAR(std::span<const char> span) { return 0; }
+constexpr std::tuple<int, int> ParseNumber_SWAR(std::span<const char> span) {
+  const bool negative = span[0] == '-';
+  span = span.subspan(negative);
+
+  auto n = ReadAsUint64(span);
+  const auto number_len = FindFirstZeroByte_SWAR(n ^ Mask('.')) + 2;
+  n <<= (sizeof(uint64_t) - number_len) * CHAR_BIT;
+  n >>= 4 * CHAR_BIT;
+  n &= 0x0F000F0F;
+  const auto number = (n * 0x640A000100) >> 32 & 0x03FF;
+  return {number_len + negative, negative ? -number : number};
+}
