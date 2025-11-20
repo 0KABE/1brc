@@ -55,13 +55,20 @@ template <auto Func>
 static void BM_ParseNumber_Templated(benchmark::State& state) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution digit_dist(0, 9);
+  std::uniform_int_distribution negative_dist(0, 1);
+  std::uniform_int_distribution digit_dist(0, 999);
 
-  auto data = fmt::format("-{}{}.{}\n", digit_dist(gen), digit_dist(gen), digit_dist(gen));
-  const std::span<const char> span(data);
+  constexpr size_t kInputSize = 1e6;
+  std::vector<std::string> inputs;
+  for (auto i = 0; i < kInputSize; ++i) {
+    const auto n = digit_dist(gen);
+    inputs.push_back(fmt::format("{}{}.{}\n", negative_dist(gen) ? "-" : "", n / 10, n % 10));
+  }
 
+  size_t index = 0;
   for (auto _ : state) {
-    benchmark::DoNotOptimize(Func(span));
+    benchmark::DoNotOptimize(Func(inputs[index++]));
+    index %= kInputSize;
   }
 }
 
