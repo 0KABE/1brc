@@ -14,7 +14,7 @@
 static void BM_ParseOnce_Base(benchmark::State& state) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution char_dist('a', 'z');
+  std::uniform_int_distribution<> char_dist('a', 'z');
   std::uniform_int_distribution temp_int_dist(-99, 99);
   std::uniform_int_distribution temp_float_dist(0, 9);
 
@@ -22,7 +22,7 @@ static void BM_ParseOnce_Base(benchmark::State& state) {
 
   std::string name;
   for (int i = 0; i < kNameLength; ++i) {
-    name += char_dist(gen);
+    name += static_cast<char>(char_dist(gen));
   }
 
   auto data = fmt::format("{};{}.{}\n", name, temp_int_dist(gen), temp_float_dist(gen));
@@ -76,3 +76,5 @@ BENCHMARK(BM_ParseOnce_Base)->Repetitions(5)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Repetitions(10)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Repetitions(10)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_Base)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_V3)->Repetitions(10)->DisplayAggregatesOnly();
