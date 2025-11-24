@@ -9,7 +9,7 @@ find_package(fmt)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-march=native)
+add_compile_options(-march=native -Wall)
 
 # Core Lib
 add_library(${PROJECT_NAME}_core
