@@ -60,7 +60,7 @@ constexpr std::tuple<int, int> ParseNumber_Base(const std::span<const char> span
   return {index, number};
 }
 
-constexpr std::tuple<int, int> ParseNumber_SWAR(std::span<const char> span) {
+constexpr std::tuple<int, int> ParseNumber_SWAR_V1(std::span<const char> span) {
   const bool negative = span[0] == '-';
   span = span.subspan(negative);
 
@@ -71,4 +71,21 @@ constexpr std::tuple<int, int> ParseNumber_SWAR(std::span<const char> span) {
   n &= 0x0F000F0F;
   const auto number = (n * 0x640A000100) >> 32 & 0x03FF;
   return {number_len + negative, negative ? -number : number};
+}
+
+inline std::tuple<Temperature, int> ParseNumber_SWAR_V2(const std::span<const char> span) {
+  const uint64_t v = *reinterpret_cast<const uint64_t *>(span.data());
+  const int64_t negative = static_cast<int64_t>(~v) << 59 >> 63;
+  uint64_t pure_number = v >> (CHAR_BIT * -negative);
+  const uint64_t ten = ((~pure_number ^ 0x2e00) & 0xFF00) == 0xFF00;
+  pure_number <<= ten * 8;
+  pure_number &= 0x0F000F0F;
+
+  const int n = 4 + static_cast<int>(-negative - ten);
+
+  //   0x0C000B0A =   A * 2^0  +  B * 2^8  + C * 2^24
+  // 0x640A000100 = 100 * 2^32 + 10 * 2^24 + 1 * 2^8
+  const uint64_t number = (pure_number * 0x640A000100) >> 32 & 0x03FF;
+  const int result = static_cast<int>((number ^ negative) - negative);
+  return {n, result};
 }

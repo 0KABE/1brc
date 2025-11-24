@@ -76,5 +76,5 @@ BENCHMARK(BM_ParseOnce_Base)->Repetitions(5)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Repetitions(10)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Repetitions(10)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_Base)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_V3)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V1)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V2)->Repetitions(10)->DisplayAggregatesOnly();
