@@ -57,16 +57,16 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
   std::mt19937 gen(rd());
   std::uniform_int_distribution num_dist(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
 
-  constexpr int kInputSize = 1 << 8;
-  std::array<uint64_t, kInputSize> data{};
+  const size_t kInputSize = state.range(0);
+  std::vector<uint64_t> data(kInputSize);
   for (auto& val : data) {
     val = num_dist(gen);
   }
 
-  int index = 0;
   for (auto _ : state) {
-    benchmark::DoNotOptimize(Func(data[index++]));
-    index = index % kInputSize;
+    for (auto num : data) {
+      benchmark::DoNotOptimize(Func(num));
+    }
   }
 }
 
@@ -100,8 +100,8 @@ BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_SWAR, Par
 BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_SWAR_V2>)
     ->DisplayAggregatesOnly();
 
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Arg(1 << 4)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Arg(1 << 4)->DisplayAggregatesOnly();
 
 BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_Base)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V1)->DisplayAggregatesOnly();
