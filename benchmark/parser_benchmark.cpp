@@ -10,26 +10,44 @@
 
 #include "parser.h"
 
-// benchmark for BasicParseOnce with random generated data in runtime
-static void BM_ParseOnce_Base(benchmark::State& state) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
+std::string RandomStation() {
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  std::uniform_int_distribution name_length_dist(1, 100);
   std::uniform_int_distribution<> char_dist('a', 'z');
-  std::uniform_int_distribution temp_int_dist(-99, 99);
-  std::uniform_int_distribution temp_float_dist(0, 9);
-
-  constexpr auto kNameLength = 100;
 
   std::string name;
-  for (int i = 0; i < kNameLength; ++i) {
+  const auto length = name_length_dist(gen);
+  for (int i = 0; i < length; ++i) {
     name += static_cast<char>(char_dist(gen));
   }
+  return name;
+}
 
-  auto data = fmt::format("{};{}.{}\n", name, temp_int_dist(gen), temp_float_dist(gen));
+std::string RandomTemperature() {
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  std::uniform_int_distribution negative_dist(0, 1);
+  std::uniform_int_distribution digit_dist(0, 999);
 
+  const auto n = digit_dist(gen);
+  return fmt::format("{}{}.{}\n", negative_dist(gen) ? "-" : "", n / 10, n % 10);
+}
+
+template <auto Func>
+static void BM_ParseOnce_Templated(benchmark::State& state) {
+  constexpr int kInputSize = 1 << 20;
+  std::vector<std::string> inputs;
+  inputs.reserve(kInputSize);
+  for (auto i = 0; i < kInputSize; ++i) {
+    inputs.push_back(fmt::format("{};{}\n", RandomStation(), RandomTemperature()));
+  }
+
+  int index = 0;
   for (auto _ : state) {
-    std::span<const char> span(data);
-    benchmark::DoNotOptimize(ParseOnce_Base(span));
+    std::span<const char> span = inputs[index++];
+    benchmark::DoNotOptimize(Func(span));
+    index %= kInputSize;
   }
 }
 
@@ -39,42 +57,52 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
   std::mt19937 gen(rd());
   std::uniform_int_distribution num_dist(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
 
-  std::array<uint64_t, 1000> data{};
+  constexpr int kInputSize = 1 << 8;
+  std::array<uint64_t, kInputSize> data{};
   for (auto& val : data) {
     val = num_dist(gen);
   }
 
+  int index = 0;
   for (auto _ : state) {
-    for (const auto num : data) {
-      benchmark::DoNotOptimize(Func(num));
-    }
+    benchmark::DoNotOptimize(Func(data[index++]));
+    index = index % kInputSize;
   }
 }
 
 template <auto Func>
 static void BM_ParseNumber_Templated(benchmark::State& state) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution negative_dist(0, 1);
-  std::uniform_int_distribution digit_dist(0, 999);
-
-  constexpr size_t kInputSize = 1e6;
+  constexpr int kInputSize = 1 << 20;
   std::vector<std::string> inputs;
+  inputs.reserve(kInputSize);
   for (auto i = 0; i < kInputSize; ++i) {
-    const auto n = digit_dist(gen);
-    inputs.push_back(fmt::format("{}{}.{}\n", negative_dist(gen) ? "-" : "", n / 10, n % 10));
+    inputs.push_back(RandomTemperature());
   }
 
-  size_t index = 0;
+  int index = 0;
   for (auto _ : state) {
     benchmark::DoNotOptimize(Func(inputs[index++]));
     index %= kInputSize;
   }
 }
 
-BENCHMARK(BM_ParseOnce_Base)->Repetitions(5)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_Base)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V1)->Repetitions(10)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V2)->Repetitions(10)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce_Base)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_Base, ParseNumber_Base>)
+    ->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_Base, ParseNumber_SWAR_V1>)
+    ->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_Base, ParseNumber_SWAR_V2>)
+    ->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_Base>)
+    ->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_SWAR_V1>)
+    ->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseOnce_Templated, ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_SWAR_V2>)
+    ->DisplayAggregatesOnly();
+
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->DisplayAggregatesOnly();
+
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_Base)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V1)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ParseNumber_Templated, ParseNumber_SWAR_V2)->DisplayAggregatesOnly();
