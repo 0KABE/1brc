@@ -42,27 +42,3 @@ Entity ParseOnce_Base(std::span<const char>& span) {
   span = span.subspan(index);
   return entity;
 }
-
-Entity ParseOnce_V1(std::span<const char>& span) {
-  std::string_view name;
-  // find ';'
-  {
-    constexpr auto mask_semicolon = Mask(';');
-    int size = 0;
-    while (size < span.size()) {
-      const auto n = *reinterpret_cast<const uint64_t*>(&span[size]);
-      if (const auto index = FindFirstZeroByte_SWAR(n ^ mask_semicolon); index < sizeof(uint64_t)) {
-        size += index;
-        name = std::string_view{span.first(size)};
-        span = span.subspan(size + 1);
-        break;
-      }
-      size += sizeof(uint64_t);
-    }
-  }
-
-  auto [size, temp] = ParseNumber_SWAR_V2(span);
-  span = span.subspan(size + 1);
-
-  return {.name = name, .temperature = temp};
-}

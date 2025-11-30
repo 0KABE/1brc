@@ -118,8 +118,6 @@ inline std::tuple<int, Temperature> ParseNumber_SWAR_V2(const std::span<const ch
 
 Entity ParseOnce_Base(std::span<const char> &span);
 
-Entity ParseOnce_V1(std::span<const char> &span);
-
 template <int (*FindFirstZeroByte)(uint64_t), std::tuple<int, Temperature> (*ParseNumber)(std::span<const char>)>
 Entity ParseOnce(std::span<const char> &span) {
   std::string_view name;
