@@ -87,18 +87,12 @@ static void BM_ReadNumber(benchmark::State& state) {
 }
 
 BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_Base)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader<FindFirstZeroByte_Base, NumberReader_Base>)
-    ->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V1>)
-    ->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V2>)
-    ->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_Base>)
-    ->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V1>)
-    ->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V2>)
-    ->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V1)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V2)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V3)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V4)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V5)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V6)->DisplayAggregatesOnly();
 
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Arg(1 << 4)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Arg(1 << 4)->DisplayAggregatesOnly();
