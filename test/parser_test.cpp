@@ -2,25 +2,20 @@
 // Created by Chen, WenTao on 2025/11/3.
 //
 
-#include "parser.h"
-
 #include <gtest/gtest.h>
 
-template <Entity (*f)(std::span<const char>&)>
-struct ParserFunc {
-  static Entity Parse(std::span<const char>& span) { return f(span); }
-};
+#include "single_line_reader.h"
 
 template <typename T>
 class ParserTest : public ::testing::Test {};
 
-using ParserImplementations = ::testing::Types<ParserFunc<ParseOnce_Base>,                                       //
-                                               ParserFunc<ParseOnce<FindFirstZeroByte_Base, ParseNumber_Base>>,  //
-                                               ParserFunc<ParseOnce<FindFirstZeroByte_Base, ParseNumber_SWAR_V1>>,
-                                               ParserFunc<ParseOnce<FindFirstZeroByte_Base, ParseNumber_SWAR_V2>>,
-                                               ParserFunc<ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_Base>>,
-                                               ParserFunc<ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_SWAR_V1>>,
-                                               ParserFunc<ParseOnce<FindFirstZeroByte_SWAR, ParseNumber_SWAR_V2>>>;
+using ParserImplementations = ::testing::Types<SingleLineReader_Base,                                        //
+                                               SingleLineReader<FindFirstZeroByte_Base, NumberReader_Base>,  //
+                                               SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V1>,
+                                               SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V2>,
+                                               SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_Base>,
+                                               SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V1>,
+                                               SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V2>>;
 
 TYPED_TEST_SUITE(ParserTest, ParserImplementations);
 
@@ -57,7 +52,7 @@ TYPED_TEST(ParserTest, AllParsers) {
   };
 
   for (auto [span, expect] : v) {
-    const auto [name, temperature] = TypeParam::Parse(span);
+    const auto [name, temperature] = TypeParam{}(span);
     EXPECT_EQ(name, expect.name);
     EXPECT_EQ(temperature, expect.temperature);
     EXPECT_TRUE(span.empty());
@@ -79,25 +74,25 @@ TEST(Bits, FindFirstZeroByte) {
 }
 
 TEST(Bits, ParseNumber) {
-  using Result = std::tuple<int, int>;
-  EXPECT_EQ(ParseNumber_Base("12.1"), Result(4, 121));
-  EXPECT_EQ(ParseNumber_Base("-12.1"), Result(5, -121));
-  EXPECT_EQ(ParseNumber_Base("0.1"), Result(3, 1));
-  EXPECT_EQ(ParseNumber_Base("-0.1"), Result(4, -1));
-  EXPECT_EQ(ParseNumber_Base("99.9"), Result(4, 999));
-  EXPECT_EQ(ParseNumber_Base("-99.9"), Result(5, -999));
+  using Result = NumberReaderResult;
+  EXPECT_EQ(NumberReader_Base{}("12.1"), Result(4, 121));
+  EXPECT_EQ(NumberReader_Base{}("-12.1"), Result(5, -121));
+  EXPECT_EQ(NumberReader_Base{}("0.1"), Result(3, 1));
+  EXPECT_EQ(NumberReader_Base{}("-0.1"), Result(4, -1));
+  EXPECT_EQ(NumberReader_Base{}("99.9"), Result(4, 999));
+  EXPECT_EQ(NumberReader_Base{}("-99.9"), Result(5, -999));
 
-  EXPECT_EQ(ParseNumber_SWAR_V1("12.1"), Result(4, 121));
-  EXPECT_EQ(ParseNumber_SWAR_V1("-12.1"), Result(5, -121));
-  EXPECT_EQ(ParseNumber_SWAR_V1("0.1"), Result(3, 1));
-  EXPECT_EQ(ParseNumber_SWAR_V1("-0.1"), Result(4, -1));
-  EXPECT_EQ(ParseNumber_SWAR_V1("99.9"), Result(4, 999));
-  EXPECT_EQ(ParseNumber_SWAR_V1("-99.9"), Result(5, -999));
+  EXPECT_EQ(NumberReader_SWAR_V1{}("12.1"), Result(4, 121));
+  EXPECT_EQ(NumberReader_SWAR_V1{}("-12.1"), Result(5, -121));
+  EXPECT_EQ(NumberReader_SWAR_V1{}("0.1"), Result(3, 1));
+  EXPECT_EQ(NumberReader_SWAR_V1{}("-0.1"), Result(4, -1));
+  EXPECT_EQ(NumberReader_SWAR_V1{}("99.9"), Result(4, 999));
+  EXPECT_EQ(NumberReader_SWAR_V1{}("-99.9"), Result(5, -999));
 
-  EXPECT_EQ(ParseNumber_SWAR_V2("12.1"), Result(4, 121));
-  EXPECT_EQ(ParseNumber_SWAR_V2("-12.1"), Result(5, -121));
-  EXPECT_EQ(ParseNumber_SWAR_V2("0.1"), Result(3, 1));
-  EXPECT_EQ(ParseNumber_SWAR_V2("-0.1"), Result(4, -1));
-  EXPECT_EQ(ParseNumber_SWAR_V2("99.9"), Result(4, 999));
-  EXPECT_EQ(ParseNumber_SWAR_V2("-99.9"), Result(5, -999));
+  EXPECT_EQ(NumberReader_SWAR_V2{}("12.1"), Result(4, 121));
+  EXPECT_EQ(NumberReader_SWAR_V2{}("-12.1"), Result(5, -121));
+  EXPECT_EQ(NumberReader_SWAR_V2{}("0.1"), Result(3, 1));
+  EXPECT_EQ(NumberReader_SWAR_V2{}("-0.1"), Result(4, -1));
+  EXPECT_EQ(NumberReader_SWAR_V2{}("99.9"), Result(4, 999));
+  EXPECT_EQ(NumberReader_SWAR_V2{}("-99.9"), Result(5, -999));
 }

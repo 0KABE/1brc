@@ -1,17 +1,12 @@
 //
-// Created by Chen, WenTao on 2025/11/3.
+// Created by Chen, WenTao on 2025/12/3.
 //
 
-#pragma once
+#include "number_reader.h"
 
-#include <climits>
-#include <span>
-#include <tuple>
-
-#include "data.h"
 #include "utils.h"
 
-constexpr std::tuple<int, Temperature> ParseNumber_Base(const std::span<const char> span) {
+NumberReaderResult NumberReader_Base::operator()(const std::span<const char> span) {
   int number = 0;
   int index = 0;
 
@@ -26,7 +21,7 @@ constexpr std::tuple<int, Temperature> ParseNumber_Base(const std::span<const ch
   return {index, number};
 }
 
-constexpr std::tuple<int, Temperature> ParseNumber_SWAR_V1(std::span<const char> span) {
+NumberReaderResult NumberReader_SWAR_V1::operator()(std::span<const char> span) {
   const bool negative = span[0] == '-';
   span = span.subspan(negative);
 
@@ -43,7 +38,7 @@ constexpr std::tuple<int, Temperature> ParseNumber_SWAR_V1(std::span<const char>
 // The format is assumed to be one of: d.d, dd.d, -d.d, -dd.d.
 // Returns a tuple containing the number of characters parsed and the temperature value as an integer (e.g., -12.3 is
 // returned as -123).
-inline std::tuple<int, Temperature> ParseNumber_SWAR_V2(const std::span<const char> span) {
+NumberReaderResult NumberReader_SWAR_V2::operator()(const std::span<const char> span) {
   // Load 8 bytes into a 64-bit integer for parallel processing.
   const uint64_t v = *reinterpret_cast<const uint64_t *>(span.data());
 
@@ -84,31 +79,4 @@ inline std::tuple<int, Temperature> ParseNumber_SWAR_V2(const std::span<const ch
   // -number if negative is -1, and number if negative is 0.
   const int result = static_cast<int>((number ^ negative) - negative);
   return {n, result};
-}
-
-Entity ParseOnce_Base(std::span<const char> &span);
-
-template <int (*FindFirstZeroByte)(uint64_t), std::tuple<int, Temperature> (*ParseNumber)(std::span<const char>)>
-Entity ParseOnce(std::span<const char> &span) {
-  std::string_view name;
-  // find ';'
-  {
-    constexpr auto mask_semicolon = Mask(';');
-    int size = 0;
-    while (size < span.size()) {
-      const auto n = *reinterpret_cast<const uint64_t *>(&span[size]);
-      if (const auto index = FindFirstZeroByte(n ^ mask_semicolon); index < sizeof(uint64_t)) {
-        size += index;
-        name = std::string_view{span.first(size)};
-        span = span.subspan(size + 1);
-        break;
-      }
-      size += sizeof(uint64_t);
-    }
-  }
-
-  auto [size, temp] = ParseNumber(span);
-  span = span.subspan(size + 1);
-
-  return {.name = name, .temperature = temp};
 }

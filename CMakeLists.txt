@@ -13,7 +13,8 @@ add_compile_options(-march=native -Wall)
 
 # Core Lib
 add_library(${PROJECT_NAME}_core
-        src/parser.cpp
+        src/single_line_reader.cpp
+        src/number_reader.cpp
 )
 target_include_directories(${PROJECT_NAME}_core PUBLIC src)
 target_link_libraries(${PROJECT_NAME}_core PUBLIC fmt::fmt)

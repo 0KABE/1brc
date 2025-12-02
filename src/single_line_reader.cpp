@@ -2,15 +2,13 @@
 // Created by Chen, WenTao on 2025/11/3.
 //
 
-#include "parser.h"
+#include "single_line_reader.h"
 
 #include <fmt/format.h>
 
-#include <bit>
 #include <cassert>
-#include <cstdint>
 
-Entity ParseOnce_Base(std::span<const char>& span) {
+Entity SingleLineReader_Base::operator()(std::span<const char>& span) {
   Entity entity{};
   size_t index = 0;
 
