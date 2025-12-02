@@ -70,7 +70,7 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
   }
 }
 
-template <typename Func>
+template <NumberReadable Func>
 static void BM_ReadNumber(benchmark::State& state) {
   constexpr int kInputSize = 1 << 20;
   std::vector<std::string> inputs;

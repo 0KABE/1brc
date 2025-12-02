@@ -6,7 +6,6 @@
 
 #include <concepts>
 #include <span>
-#include <tuple>
 
 #include "data.h"
 #include "number_reader.h"
@@ -18,7 +17,6 @@ concept SingleLineReadable = requires(F f, std::span<const char> span) {
 };
 
 using FindFirstZeroByteFunc = int (*)(uint64_t);
-using ParserFunc = std::tuple<int, Temperature> (*)(std::span<const char> span);
 
 struct SingleLineReader_Base {
   static Entity operator()(std::span<const char> &span);
