@@ -12,17 +12,15 @@
 #include "utils.h"
 
 template <typename F>
-concept SingleLineReadable = requires(F f, std::span<const char> span) {
+concept SingleLineReaderFunctor = requires(F f, std::span<const char> span) {
   { f(span) } -> std::convertible_to<Entity>;
 };
-
-using FindFirstZeroByteFunc = int (*)(uint64_t);
 
 struct SingleLineReader_Base {
   static Entity operator()(std::span<const char> &span);
 };
 
-template <FindFirstZeroByteFunc find_first_zero_byte, NumberReadable number_reader>
+template <FindLowestZeroByteFunctor find_first_zero_byte, NumberReaderFunctor number_reader>
 struct SingleLineReader {
   static Entity operator()(std::span<const char> &span) {
     std::string_view name;
@@ -32,7 +30,7 @@ struct SingleLineReader {
       int size = 0;
       while (size < span.size()) {
         const auto n = *reinterpret_cast<const uint64_t *>(&span[size]);
-        if (const auto index = find_first_zero_byte(n ^ mask_semicolon); index < sizeof(uint64_t)) {
+        if (const auto index = find_first_zero_byte{}(n ^ mask_semicolon); index < sizeof(uint64_t)) {
           size += index;
           name = std::string_view{span.first(size)};
           span = span.subspan(size + 1);
@@ -49,9 +47,9 @@ struct SingleLineReader {
   }
 };
 
-using SingleLineReader_V1 = SingleLineReader<FindFirstZeroByte_Base, NumberReader_Base>;
-using SingleLineReader_V2 = SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V1>;
-using SingleLineReader_V3 = SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V2>;
-using SingleLineReader_V4 = SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_Base>;
-using SingleLineReader_V5 = SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V1>;
-using SingleLineReader_V6 = SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V2>;
+using SingleLineReader_V1 = SingleLineReader<FindLowestZeroByte_Base, NumberReader_Base>;
+using SingleLineReader_V2 = SingleLineReader<FindLowestZeroByte_Base, NumberReader_SWAR_V1>;
+using SingleLineReader_V3 = SingleLineReader<FindLowestZeroByte_Base, NumberReader_SWAR_V2>;
+using SingleLineReader_V4 = SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_Base>;
+using SingleLineReader_V5 = SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_SWAR_V1>;
+using SingleLineReader_V6 = SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_SWAR_V2>;

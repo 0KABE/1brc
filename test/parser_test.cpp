@@ -6,16 +6,16 @@
 
 #include "single_line_reader.h"
 
-template <typename T>
+template <typename>
 class ParserTest : public ::testing::Test {};
 
-using ParserImplementations = ::testing::Types<SingleLineReader_Base,                                        //
-                                               SingleLineReader<FindFirstZeroByte_Base, NumberReader_Base>,  //
-                                               SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V1>,
-                                               SingleLineReader<FindFirstZeroByte_Base, NumberReader_SWAR_V2>,
-                                               SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_Base>,
-                                               SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V1>,
-                                               SingleLineReader<FindFirstZeroByte_SWAR, NumberReader_SWAR_V2>>;
+using ParserImplementations = ::testing::Types<SingleLineReader_Base,                                         //
+                                               SingleLineReader<FindLowestZeroByte_Base, NumberReader_Base>,  //
+                                               SingleLineReader<FindLowestZeroByte_Base, NumberReader_SWAR_V1>,
+                                               SingleLineReader<FindLowestZeroByte_Base, NumberReader_SWAR_V2>,
+                                               SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_Base>,
+                                               SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_SWAR_V1>,
+                                               SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_SWAR_V2>>;
 
 TYPED_TEST_SUITE(ParserTest, ParserImplementations);
 
@@ -60,17 +60,17 @@ TYPED_TEST(ParserTest, AllParsers) {
 }
 
 TEST(Bits, FindFirstZeroByte) {
-  EXPECT_EQ(FindFirstZeroByte_SWAR(0x1234567812345678), 8);
-  EXPECT_EQ(FindFirstZeroByte_SWAR(0x1234007812345678), 5);
-  EXPECT_EQ(FindFirstZeroByte_SWAR(0x9ABCDEFF00005678), 2);
-  EXPECT_EQ(FindFirstZeroByte_SWAR(0x9ABCDEFF01005678), 2);
-  EXPECT_EQ(FindFirstZeroByte_SWAR(0x9ABCDEFF00015678), 3);
+  EXPECT_EQ(FindLowestZeroByte_SWAR{}(0x1234567812345678), 8);
+  EXPECT_EQ(FindLowestZeroByte_SWAR{}(0x1234007812345678), 5);
+  EXPECT_EQ(FindLowestZeroByte_SWAR{}(0x9ABCDEFF00005678), 2);
+  EXPECT_EQ(FindLowestZeroByte_SWAR{}(0x9ABCDEFF01005678), 2);
+  EXPECT_EQ(FindLowestZeroByte_SWAR{}(0x9ABCDEFF00015678), 3);
 
-  EXPECT_EQ(FindFirstZeroByte_Base(0x1234567812345678), 8);
-  EXPECT_EQ(FindFirstZeroByte_Base(0x1234007812345678), 5);
-  EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF00005678), 2);
-  EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF01005678), 2);
-  EXPECT_EQ(FindFirstZeroByte_Base(0x9ABCDEFF00015678), 3);
+  EXPECT_EQ(FindLowestZeroByte_Base{}(0x1234567812345678), 8);
+  EXPECT_EQ(FindLowestZeroByte_Base{}(0x1234007812345678), 5);
+  EXPECT_EQ(FindLowestZeroByte_Base{}(0x9ABCDEFF00005678), 2);
+  EXPECT_EQ(FindLowestZeroByte_Base{}(0x9ABCDEFF01005678), 2);
+  EXPECT_EQ(FindLowestZeroByte_Base{}(0x9ABCDEFF00015678), 3);
 }
 
 TEST(Bits, ParseNumber) {

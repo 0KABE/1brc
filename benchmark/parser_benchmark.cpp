@@ -34,7 +34,7 @@ std::string RandomTemperature() {
   return fmt::format("{}{}.{}\n", negative_dist(gen) ? "-" : "", n / 10, n % 10);
 }
 
-template <SingleLineReadable Func>
+template <SingleLineReaderFunctor Func>
 static void BM_ReadSingleLine(benchmark::State& state) {
   constexpr int kInputSize = 1 << 20;
   std::vector<std::string> inputs;
@@ -51,8 +51,8 @@ static void BM_ReadSingleLine(benchmark::State& state) {
   }
 }
 
-template <auto Func>
-static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
+template <FindLowestZeroByteFunctor Func>
+static void BM_FindFirstZeroByte(benchmark::State& state) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution num_dist(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
@@ -65,12 +65,12 @@ static void BM_FindFirstZeroByte_Templated(benchmark::State& state) {
 
   for (auto _ : state) {
     for (auto num : data) {
-      benchmark::DoNotOptimize(Func(num));
+      benchmark::DoNotOptimize(Func{}(num));
     }
   }
 }
 
-template <NumberReadable Func>
+template <NumberReaderFunctor Func>
 static void BM_ReadNumber(benchmark::State& state) {
   constexpr int kInputSize = 1 << 20;
   std::vector<std::string> inputs;
@@ -94,8 +94,8 @@ BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V4)->DisplayAggregatesOnl
 BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V5)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V6)->DisplayAggregatesOnly();
 
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_Base)->Arg(1 << 4)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_FindFirstZeroByte_Templated, FindFirstZeroByte_SWAR)->Arg(1 << 4)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte, FindLowestZeroByte_Base)->Arg(1 << 4)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_FindFirstZeroByte, FindLowestZeroByte_SWAR)->Arg(1 << 4)->DisplayAggregatesOnly();
 
 BENCHMARK_TEMPLATE(BM_ReadNumber, NumberReader_Base)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ReadNumber, NumberReader_SWAR_V1)->DisplayAggregatesOnly();

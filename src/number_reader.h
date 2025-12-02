@@ -13,7 +13,7 @@ using ByteCount = int;
 using NumberReaderResult = std::tuple<ByteCount, Temperature>;
 
 template <typename F>
-concept NumberReadable = requires(F f, std::span<const char> span) {
+concept NumberReaderFunctor = requires(F f, std::span<const char> span) {
   { f(span) } -> std::convertible_to<NumberReaderResult>;
 };
 
