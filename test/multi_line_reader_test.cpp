@@ -23,7 +23,7 @@ TEST(MultiLineReader, Base) {
                | std::views::join                                                     //
                | std::ranges::to<std::string>();
 
-  MultiLineReader reader;
+  MultiLineReader<SingleLineReader_Base> reader;
   reader.Parse(input);
   EXPECT_EQ(reader.GetStatistics().size(), 3);
   EXPECT_EQ(reader.GetStatistics().at("AAA").min, -10);

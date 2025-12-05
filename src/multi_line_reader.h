@@ -8,19 +8,20 @@
 
 #include "single_line_reader.h"
 
+template <SingleLineReaderFunctor Reader>
 class MultiLineReader {
  public:
   using StatisticsMap = std::unordered_map<StationName, Statistics>;
 
   void Parse(std::span<const char> span) {
     while (!span.empty()) {
-      const auto [name, temperature] = SingleLineReader_V6{}(span);
+      const auto [name, temperature] = Reader{}(span);
 
       auto& [min, max, count, sum] = statistics_[name];
       min = std::min(min, temperature);
       max = std::max(max, temperature);
       sum += temperature;
-      count++;
+      ++count;
     }
   }
 
