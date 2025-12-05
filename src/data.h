@@ -16,3 +16,10 @@ struct Entity {
 
   bool operator==(const Entity& other) const { return name == other.name && temperature == other.temperature; }
 };
+
+struct Statistics {
+  Temperature min{std::numeric_limits<Temperature>::max()};
+  Temperature max{std::numeric_limits<Temperature>::min()};
+  int count{0};
+  size_t sum{0};
+};
