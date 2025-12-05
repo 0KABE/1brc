@@ -20,27 +20,18 @@ struct SingleLineReader_Base {
   static Entity operator()(std::span<const char> &span);
 };
 
-template <FindLowestZeroByteFunctor find_first_zero_byte, NumberReaderFunctor number_reader>
+template <FindLowestZeroByteFunctor FindFirstZeroByte, NumberReaderFunctor NumberReader>
 struct SingleLineReader {
   static Entity operator()(std::span<const char> &span) {
     std::string_view name;
     // find ';'
     {
-      constexpr auto mask_semicolon = Mask(';');
-      int size = 0;
-      while (size < span.size()) {
-        const auto n = *reinterpret_cast<const uint64_t *>(&span[size]);
-        if (const auto index = find_first_zero_byte{}(n ^ mask_semicolon); index < sizeof(uint64_t)) {
-          size += index;
-          name = std::string_view{span.first(size)};
-          span = span.subspan(size + 1);
-          break;
-        }
-        size += sizeof(uint64_t);
-      }
+      auto index = FindByte<FindFirstZeroByte, ';'>{}(span);
+      name = std::string_view{span.first(index)};
+      span = span.subspan(index + 1);
     }
 
-    auto [size, temp] = number_reader{}(span);
+    auto [size, temp] = NumberReader{}(span);
     span = span.subspan(size + 1);
 
     return {.name = name, .temperature = temp};

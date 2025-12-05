@@ -48,3 +48,20 @@ struct FindLowestZeroByte_SWAR {
     return std::countr_zero(zero_mask) / 8;
   }
 };
+
+template <FindLowestZeroByteFunctor FindFirstZeroByte, char Byte>
+struct FindByte {
+  static constexpr int operator()(const std::span<const char> span) {
+    constexpr auto mask_semicolon = Mask(Byte);
+    int size = 0;
+    while (size < span.size()) {
+      const auto n = *reinterpret_cast<const uint64_t *>(&span[size]);
+      if (const auto index = FindFirstZeroByte{}(n ^ mask_semicolon); index < sizeof(uint64_t)) {
+        size += index;
+        return size;
+      }
+      size += sizeof(uint64_t);
+    }
+    return size;
+  }
+};
