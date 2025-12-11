@@ -23,7 +23,7 @@ struct SingleLineReader_Base {
 template <FindLowestZeroByteFunctor FindFirstZeroByte, NumberReaderFunctor NumberReader>
 struct SingleLineReader {
   static Entity operator()(std::span<const char> &span) {
-    std::string_view name;
+    StationName name;
     // find ';'
     {
       auto index = FindByte<FindFirstZeroByte, ';'>{}(span);

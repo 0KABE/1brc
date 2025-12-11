@@ -5,6 +5,7 @@
 #pragma once
 
 #include <algorithm>
+#include <mutex>
 #include <span>
 
 #include "utils.h"
@@ -14,6 +15,8 @@ class Allocator {
   explicit Allocator(const std::span<const char> span) : buff_(span) {}
 
   std::span<const char> Allocate(size_t size) {
+    std::lock_guard _(mutex_);
+
     if (size >= buff_.size()) {
       const auto span = buff_;
       buff_ = std::span<const char>{};
@@ -27,5 +30,6 @@ class Allocator {
   }
 
  private:
+  std::mutex mutex_;
   std::span<const char> buff_;
 };

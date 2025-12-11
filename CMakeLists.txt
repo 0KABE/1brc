@@ -17,6 +17,7 @@ add_library(${PROJECT_NAME}_core
         src/multi_line_reader.cpp
         src/number_reader.cpp
         src/allocator.cpp
+        src/parallelizer.cpp
 )
 target_include_directories(${PROJECT_NAME}_core PUBLIC src)
 target_link_libraries(${PROJECT_NAME}_core PUBLIC fmt::fmt)
@@ -31,6 +32,7 @@ add_executable(${PROJECT_NAME}_test
         test/parser_test.cpp
         test/multi_line_reader_test.cpp
         test/allocator_test.cpp
+        test/parallelizer_test.cpp
 )
 target_include_directories(${PROJECT_NAME}_test PRIVATE src)
 target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME}_core GTest::gtest)
