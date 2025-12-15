@@ -29,7 +29,12 @@ class Allocator {
     return span;
   }
 
+  bool IsEmpty() const {
+    std::lock_guard _(mutex_);
+    return buff_.empty();
+  }
+
  private:
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
   std::span<const char> buff_;
 };
