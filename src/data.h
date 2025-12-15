@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <limits>
 #include <string_view>
+#include <unordered_map>
 
 using StationName = std::string_view;
 using Temperature = int16_t;
+using ReaderBuffer = std::span<const char>;
 
 struct Entity {
   StationName name;         // 1 - 100 Bytes
@@ -24,3 +26,5 @@ struct Statistics {
   int count{0};
   size_t sum{0};
 };
+
+using MultiLineReaderStatistics = std::unordered_map<StationName, Statistics>;

@@ -6,12 +6,8 @@
 
 #include <algorithm>
 #include <ranges>
-#include <unordered_map>
 
 #include "single_line_reader.h"
-
-using ReaderBuffer = std::span<const char>;
-using MultiLineReaderStatistics = std::unordered_map<StationName, Statistics>;
 
 template <typename F>
 concept MultiLineReaderFunctor = requires(F f, ReaderBuffer buff) {
