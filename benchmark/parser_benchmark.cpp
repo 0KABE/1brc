@@ -8,48 +8,8 @@
 #include <random>
 #include <string>
 
+#include "benchmark_util.h"
 #include "single_line_reader.h"
-
-std::string RandomStation() {
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  std::uniform_int_distribution name_length_dist(1, 100);
-  std::uniform_int_distribution<> char_dist('a', 'z');
-
-  std::string name;
-  const auto length = name_length_dist(gen);
-  for (int i = 0; i < length; ++i) {
-    name += static_cast<char>(char_dist(gen));
-  }
-  return name;
-}
-
-std::string RandomTemperature() {
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  std::uniform_int_distribution negative_dist(0, 1);
-  std::uniform_int_distribution digit_dist(0, 999);
-
-  const auto n = digit_dist(gen);
-  return fmt::format("{}{}.{}\n", negative_dist(gen) ? "-" : "", n / 10, n % 10);
-}
-
-template <SingleLineReaderFunctor Func>
-static void BM_ReadSingleLine(benchmark::State& state) {
-  constexpr int kInputSize = 1 << 20;
-  std::vector<std::string> inputs;
-  inputs.reserve(kInputSize);
-  for (auto i = 0; i < kInputSize; ++i) {
-    inputs.push_back(fmt::format("{};{}\n", RandomStation(), RandomTemperature()));
-  }
-
-  int index = 0;
-  for (auto _ : state) {
-    std::span<const char> span = inputs[index++];
-    benchmark::DoNotOptimize(Func{}(span));
-    index %= kInputSize;
-  }
-}
 
 template <FindLowestZeroByteFunctor Func>
 static void BM_FindFirstZeroByte(benchmark::State& state) {
@@ -85,14 +45,6 @@ static void BM_ReadNumber(benchmark::State& state) {
     index %= kInputSize;
   }
 }
-
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_Base)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V1)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V2)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V3)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V4)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V5)->DisplayAggregatesOnly();
-BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V6)->DisplayAggregatesOnly();
 
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte, FindLowestZeroByte_Base)->Arg(1 << 4)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_FindFirstZeroByte, FindLowestZeroByte_SWAR)->Arg(1 << 4)->DisplayAggregatesOnly();
