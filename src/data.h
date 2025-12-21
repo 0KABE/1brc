@@ -25,6 +25,13 @@ struct Statistics {
   Temperature max{std::numeric_limits<Temperature>::min()};
   int count{0};
   size_t sum{0};
+
+  void Record(const Temperature temp) {
+    min = std::min(min, temp);
+    max = std::max(max, temp);
+    sum += temp;
+    ++count;
+  }
 };
 
 using MultiLineReaderStatistics = std::unordered_map<StationName, Statistics>;
