@@ -4,36 +4,18 @@
 
 #pragma once
 
-#include <algorithm>
 #include <mutex>
 #include <span>
 
-#include "find_byte.h"
-#include "utils.h"
+#include "data.h"
 
 class Allocator {
  public:
-  explicit Allocator(const std::span<const char> span) : buff_(span) {}
+  explicit Allocator(const ReaderBuffer span) : buff_(span) {}
 
-  std::span<const char> Allocate(size_t size) {
-    std::lock_guard _(mutex_);
+  ReaderBuffer Allocate(size_t size);
 
-    if (size >= buff_.size()) {
-      const auto span = buff_;
-      buff_ = std::span<const char>{};
-      return span;
-    }
-
-    size += FindByte<FindLowestZeroByte_SWAR, '\n'>{}(buff_.subspan(size));
-    const auto span = buff_.first(size + 1);
-    buff_ = buff_.subspan(size + 1);
-    return span;
-  }
-
-  bool IsEmpty() const {
-    std::lock_guard _(mutex_);
-    return buff_.empty();
-  }
+  bool IsEmpty() const;
 
  private:
   mutable std::mutex mutex_;
