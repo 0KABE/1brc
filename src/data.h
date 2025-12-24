@@ -4,18 +4,29 @@
 
 #pragma once
 
-#include <cstdint>
 #include <limits>
 #include <string_view>
-#include <unordered_map>
 
-using StationName = std::string_view;
+#include "hash.h"
+
 using Temperature = int16_t;
 using ReaderBuffer = std::span<const char>;
 
+struct StationName {
+  size_t hash{};
+  std::string_view name;
+
+  StationName() = default;
+  // StationName(const std::string_view name) : hash(std::hash<std::string_view>{}(name)), name(name) {}
+  StationName(const std::string_view name) : hash(FastHash(name)), name(name) {}
+  // StationName(const std::string_view name) : hash(SimpleHash(name)), name(name) {}
+
+  bool operator==(const StationName& other) const { return hash == other.hash; }
+};
+
 struct Entity {
-  StationName name;         // 1 - 100 Bytes
-  Temperature temperature;  // -99.9 - 99.9
+  StationName name;           // 1 - 100 Bytes
+  Temperature temperature{};  // -99.9 - 99.9
 
   bool operator==(const Entity& other) const { return name == other.name && temperature == other.temperature; }
 };
@@ -33,5 +44,3 @@ struct Statistics {
     ++count;
   }
 };
-
-using MultiLineReaderStatistics = std::unordered_map<StationName, Statistics>;

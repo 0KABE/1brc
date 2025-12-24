@@ -6,7 +6,6 @@
 
 #include <sys/file.h>
 #include <sys/mman.h>
-#include <unistd.h>
 
 #include <cassert>
 #include <filesystem>

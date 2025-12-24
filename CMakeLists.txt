@@ -42,5 +42,6 @@ add_executable(${PROJECT_NAME}_benchmark
         benchmark/basic_benchmark.cpp
         benchmark/parser_benchmark.cpp
         benchmark/single_line_benchmark.cpp
+        benchmark/hash_benchmark.cpp
 )
 target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME}_core benchmark::benchmark_main)

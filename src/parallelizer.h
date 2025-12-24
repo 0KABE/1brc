@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <ranges>
 #include <span>
 #include <thread>
 #include <unordered_map>
@@ -18,9 +19,9 @@ class Parallelizer {
   Parallelizer(const int concurrency, const size_t chunk, const std::span<const char> data)
       : threads_(concurrency), chunk_size_(chunk), data_(data) {}
 
-  MultiLineReaderStatistics Process() {
+  StatisticsMap Process() {
     Allocator allocator(data_);
-    MultiLineReaderStatistics result;
+    StatisticsMap result;
 
     {
       std::mutex mutex;
@@ -34,7 +35,12 @@ class Parallelizer {
           }
 
           std::lock_guard _(mutex);
-          for (auto& [name, statistics] : reader.GetStatistics()) {
+          auto all_statistics = reader.GetStatistics().bucket |
+                                std::views::filter([](const auto& item) { return item.used; }) |
+                                std::views::transform([](const auto& item) {
+                                  return std::tuple<StationName, Statistics>{item.key, item.value};
+                                });
+          for (const auto& [name, statistics] : all_statistics) {
             auto& [min, max, count, sum] = result[name];
             min = std::min(min, statistics.min);
             max = std::max(max, statistics.max);
@@ -59,9 +65,9 @@ class ParallelizerV2 {
   ParallelizerV2(const int concurrency, const size_t chunk, const std::span<const char> data)
       : threads_(concurrency), chunk_size_(chunk), data_(data) {}
 
-  MultiLineReaderStatistics Process() {
+  StatisticsMap Process() {
     Allocator allocator(data_);
-    MultiLineReaderStatistics result;
+    StatisticsMap result;
 
     {
       std::mutex mutex;
@@ -69,7 +75,7 @@ class ParallelizerV2 {
       threads.reserve(threads_);
       for (int i = 0; i < threads_; ++i) {
         threads.emplace_back([chunk_size = chunk_size_, &allocator, &mutex, &result] {
-          MultiLineReaderV2<SingleLineReader_V6> reader;
+          MultiLineReaderV2 reader;
           while (!allocator.IsEmpty()) {
             reader.Parse(allocator.Allocate(chunk_size),   //
                          allocator.Allocate(chunk_size),   //
@@ -77,7 +83,12 @@ class ParallelizerV2 {
           }
 
           std::lock_guard _(mutex);
-          for (auto& [name, statistics] : reader.GetStatistics()) {
+          auto all_statistics = reader.GetStatistics().bucket |
+                                std::views::filter([](const auto& item) { return item.used; }) |
+                                std::views::transform([](const auto& item) {
+                                  return std::tuple<StationName, Statistics>{item.key, item.value};
+                                });
+          for (const auto& [name, statistics] : all_statistics) {
             auto& [min, max, count, sum] = result[name];
             min = std::min(min, statistics.min);
             max = std::max(max, statistics.max);

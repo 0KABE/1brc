@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include <algorithm>
 #include <ranges>
 
 #include "single_line_reader.h"
+#include "statistics_map.h"
 
 template <typename F>
 concept MultiLineReaderFunctor = requires(F f, ReaderBuffer buff) {
   { f.Parse(buff) } -> std::convertible_to<void>;
-  { f.GetStatistics() } -> std::convertible_to<const MultiLineReaderStatistics&>;
+  { f.GetStatistics() } -> std::convertible_to<const StatisticsMap&>;
 };
 
 template <SingleLineReaderFunctor Reader>
@@ -25,16 +25,14 @@ class MultiLineReader {
     }
   }
 
-  [[nodiscard]] const MultiLineReaderStatistics& GetStatistics() const { return statistics_; }
+  [[nodiscard]] const StatisticsMap& GetStatistics() const { return statistics_; }
 
  private:
-  MultiLineReaderStatistics statistics_;
+  StatisticsMap statistics_;
 };
 
 class MultiLineReaderV2 {
  public:
-  using StatisticsMap = std::unordered_map<StationName, Statistics>;
-
   void Parse(ReaderBuffer buff1, ReaderBuffer buff2, ReaderBuffer buff3) {
     while (!buff1.empty() && !buff2.empty() && !buff3.empty()) {
       const auto [e1, e2, e3] =
@@ -61,8 +59,8 @@ class MultiLineReaderV2 {
     }
   }
 
-  [[nodiscard]] const MultiLineReaderStatistics& GetStatistics() const { return statistics_; }
+  [[nodiscard]] const StatisticsMap& GetStatistics() const { return statistics_; }
 
  private:
-  MultiLineReaderStatistics statistics_;
+  StatisticsMap statistics_;
 };
