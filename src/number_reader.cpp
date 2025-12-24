@@ -4,6 +4,7 @@
 
 #include "number_reader.h"
 
+#include "find_byte.h"
 #include "utils.h"
 
 NumberReaderResult NumberReader_Base::operator()(const std::span<const char> span) {

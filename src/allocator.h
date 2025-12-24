@@ -8,6 +8,7 @@
 #include <mutex>
 #include <span>
 
+#include "find_byte.h"
 #include "utils.h"
 
 class Allocator {

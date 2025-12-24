@@ -8,6 +8,7 @@
 #include <span>
 
 #include "data.h"
+#include "find_byte.h"
 #include "number_reader.h"
 #include "utils.h"
 
