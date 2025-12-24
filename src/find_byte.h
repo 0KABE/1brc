@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #include <bit>
 #include <climits>
 #include <concepts>
@@ -40,7 +41,7 @@ struct FindByte {
     constexpr auto mask_semicolon = Mask(Byte);
     int size = 0;
     while (size < span.size()) {
-      const auto n = *reinterpret_cast<const uint64_t*>(&span[size]);
+      const auto n = std::bit_cast<uint64_t>(span.subspan(size).first<sizeof(uint64_t)>());
       if (const auto index = FindFirstZeroByte{}(n ^ mask_semicolon); index < sizeof(uint64_t)) {
         size += index;
         return size;
