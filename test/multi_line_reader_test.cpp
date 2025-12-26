@@ -9,6 +9,8 @@
 #include <ranges>
 
 TEST(MultiLineReader, Base) {
+  using namespace std::string_view_literals;
+
   std::vector<std::string_view> raw_input = {
       "AAA;-1.0",  //
       "BBB;99.9",  //
@@ -26,12 +28,12 @@ TEST(MultiLineReader, Base) {
   MultiLineReader<SingleLineReader_Base> reader;
   reader.Parse(input);
   EXPECT_EQ(reader.GetStatistics().size(), 3);
-  EXPECT_EQ(reader.GetStatistics().at("AAA").min, -10);
-  EXPECT_EQ(reader.GetStatistics().at("AAA").max, 20);
-  EXPECT_EQ(reader.GetStatistics().at("AAA").count, 3);
-  EXPECT_EQ(reader.GetStatistics().at("AAA").sum, 20);
-  EXPECT_EQ(reader.GetStatistics().at("BBB").min, 999);
-  EXPECT_EQ(reader.GetStatistics().at("BBB").max, 999);
-  EXPECT_EQ(reader.GetStatistics().at("BBB").count, 2);
-  EXPECT_EQ(reader.GetStatistics().at("BBB").sum, 1998);
+  EXPECT_EQ(reader.GetStatistics().at("AAA"sv).min, -10);
+  EXPECT_EQ(reader.GetStatistics().at("AAA"sv).max, 20);
+  EXPECT_EQ(reader.GetStatistics().at("AAA"sv).count, 3);
+  EXPECT_EQ(reader.GetStatistics().at("AAA"sv).sum, 20);
+  EXPECT_EQ(reader.GetStatistics().at("BBB"sv).min, 999);
+  EXPECT_EQ(reader.GetStatistics().at("BBB"sv).max, 999);
+  EXPECT_EQ(reader.GetStatistics().at("BBB"sv).count, 2);
+  EXPECT_EQ(reader.GetStatistics().at("BBB"sv).sum, 1998);
 }

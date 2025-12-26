@@ -6,7 +6,7 @@
 #include <fmt/format.h>
 
 #include "benchmark_util.h"
-#include "utils.h"
+#include "hash.h"
 
 template <auto Func>
 static void BM_Hash(benchmark::State& state) {

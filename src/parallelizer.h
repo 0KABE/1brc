@@ -35,12 +35,12 @@ class Parallelizer {
           }
 
           std::lock_guard _(mutex);
-          auto all_statistics = reader.GetStatistics().bucket |
-                                std::views::filter([](const auto& item) { return item.used; }) |
-                                std::views::transform([](const auto& item) {
-                                  return std::tuple<StationName, Statistics>{item.key, item.value};
-                                });
-          for (const auto& [name, statistics] : all_statistics) {
+          // auto all_statistics = reader.GetStatistics().bucket |
+          //                       std::views::filter([](const auto& item) { return item.used; }) |
+          //                       std::views::transform([](const auto& item) {
+          //                         return std::tuple<StationName, Statistics>{item.key, item.value};
+          //                       });
+          for (const auto& [name, statistics] : reader.GetStatistics()) {
             auto& [min, max, count, sum] = result[name];
             min = std::min(min, statistics.min);
             max = std::max(max, statistics.max);
@@ -83,12 +83,12 @@ class ParallelizerV2 {
           }
 
           std::lock_guard _(mutex);
-          auto all_statistics = reader.GetStatistics().bucket |
-                                std::views::filter([](const auto& item) { return item.used; }) |
-                                std::views::transform([](const auto& item) {
-                                  return std::tuple<StationName, Statistics>{item.key, item.value};
-                                });
-          for (const auto& [name, statistics] : all_statistics) {
+          // auto all_statistics = reader.GetStatistics().bucket |
+          //                       std::views::filter([](const auto& item) { return item.used; }) |
+          //                       std::views::transform([](const auto& item) {
+          //                         return std::tuple<StationName, Statistics>{item.key, item.value};
+          //                       });
+          for (const auto& [name, statistics] : reader.GetStatistics()) {
             auto& [min, max, count, sum] = result[name];
             min = std::min(min, statistics.min);
             max = std::max(max, statistics.max);

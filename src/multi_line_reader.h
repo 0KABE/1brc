@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <ranges>
-
 #include "single_line_reader.h"
 #include "statistics_map.h"
 
@@ -35,8 +33,7 @@ class MultiLineReaderV2 {
  public:
   void Parse(ReaderBuffer buff1, ReaderBuffer buff2, ReaderBuffer buff3) {
     while (!buff1.empty() && !buff2.empty() && !buff3.empty()) {
-      const auto [e1, e2, e3] =
-          SingleLineReaderParallelism<FindLowestZeroByte_SWAR, NumberReader_SWAR_V2>{}(buff1, buff2, buff3);
+      const auto [e1, e2, e3] = SingleLineReaderParallelism<FindByte_STD, NumberReader_SWAR_V2>{}(buff1, buff2, buff3);
 
       statistics_[e1.name].Record(e1.temperature);
       statistics_[e2.name].Record(e2.temperature);

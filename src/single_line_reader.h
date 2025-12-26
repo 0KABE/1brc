@@ -20,16 +20,14 @@ struct SingleLineReader_Base {
   static Entity operator()(std::span<const char> &span);
 };
 
-template <FindLowestZeroByteFunctor FindFirstZeroByte, NumberReaderFunctor NumberReader>
+template <template <char> class FindByte, NumberReaderFunctor NumberReader>
+  requires FindByteFunctor<FindByte, char{}>
 struct SingleLineReader {
   static Entity operator()(std::span<const char> &span) {
     StationName name;
     // find ';'
     {
-      // auto index = FindByte<FindFirstZeroByte, ';'>{}(span);
-      //TODO: use template for memchr
-      const auto pos = static_cast<const char *>(memchr(span.data(), ';', span.size_bytes()));
-      const auto index = pos - span.data();
+      const auto index = FindByte<';'>{}(span);
       name = std::string_view{span.first(index)};
       span = span.subspan(index + 1);
     }
@@ -41,7 +39,8 @@ struct SingleLineReader {
   }
 };
 
-template <FindLowestZeroByteFunctor FindFirstZeroByte, NumberReaderFunctor NumberReader>
+template <template <char> class FindByte, NumberReaderFunctor NumberReader>
+  requires FindByteFunctor<FindByte, char{}>
 struct SingleLineReaderParallelism {
   static std::tuple<Entity, Entity, Entity> operator()(ReaderBuffer &span1, ReaderBuffer &span2, ReaderBuffer &span3) {
     StationName name1;
@@ -50,9 +49,9 @@ struct SingleLineReaderParallelism {
 
     // find ';'
     {
-      auto ind1 = FindByte<FindFirstZeroByte, ';'>{}(span1);
-      auto ind2 = FindByte<FindFirstZeroByte, ';'>{}(span2);
-      auto ind3 = FindByte<FindFirstZeroByte, ';'>{}(span3);
+      auto ind1 = FindByte<';'>{}(span1);
+      auto ind2 = FindByte<';'>{}(span2);
+      auto ind3 = FindByte<';'>{}(span3);
 
       name1 = std::string_view{span1.first(ind1)};
       name2 = std::string_view{span2.first(ind2)};
@@ -79,9 +78,12 @@ struct SingleLineReaderParallelism {
   }
 };
 
-using SingleLineReader_V1 = SingleLineReader<FindLowestZeroByte_Base, NumberReader_Base>;
-using SingleLineReader_V2 = SingleLineReader<FindLowestZeroByte_Base, NumberReader_SWAR_V1>;
-using SingleLineReader_V3 = SingleLineReader<FindLowestZeroByte_Base, NumberReader_SWAR_V2>;
-using SingleLineReader_V4 = SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_Base>;
-using SingleLineReader_V5 = SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_SWAR_V1>;
-using SingleLineReader_V6 = SingleLineReader<FindLowestZeroByte_SWAR, NumberReader_SWAR_V2>;
+using SingleLineReader_V1 = SingleLineReader<FindByte_Base, NumberReader_Base>;
+using SingleLineReader_V2 = SingleLineReader<FindByte_Base, NumberReader_SWAR_V1>;
+using SingleLineReader_V3 = SingleLineReader<FindByte_Base, NumberReader_SWAR_V2>;
+using SingleLineReader_V4 = SingleLineReader<FindByte_SWAR, NumberReader_Base>;
+using SingleLineReader_V5 = SingleLineReader<FindByte_SWAR, NumberReader_SWAR_V1>;
+using SingleLineReader_V6 = SingleLineReader<FindByte_SWAR, NumberReader_SWAR_V2>;
+using SingleLineReader_V7 = SingleLineReader<FindByte_STD, NumberReader_Base>;
+using SingleLineReader_V8 = SingleLineReader<FindByte_STD, NumberReader_SWAR_V1>;
+using SingleLineReader_V9 = SingleLineReader<FindByte_STD, NumberReader_SWAR_V2>;
