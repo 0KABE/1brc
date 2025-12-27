@@ -29,7 +29,7 @@ class Parallelizer {
       threads.reserve(threads_);
       for (int i = 0; i < threads_; ++i) {
         threads.emplace_back([chunk_size = chunk_size_, &allocator, &mutex, &result] {
-          MultiLineReader<SingleLineReader_V6> reader;
+          MultiLineReader<SingleLineReader_V9> reader;
           for (auto buff = allocator.Allocate(chunk_size); !buff.empty(); buff = allocator.Allocate(chunk_size)) {
             reader.Parse(buff);
           }
