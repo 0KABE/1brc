@@ -9,11 +9,13 @@
 #include <cstring>
 #include <span>
 
+#include "utils.h"
+
 inline size_t SimpleHash(std::span<const char> buff) {
   size_t result = 0;
 
   while (buff.size_bytes() >= CHAR_BIT) {
-    const auto v = std::bit_cast<size_t>(buff.first<CHAR_BIT>());
+    const auto v = BitCast<size_t>(buff);
     buff = buff.subspan<CHAR_BIT>();
     result ^= v;
   }

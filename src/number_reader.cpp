@@ -26,7 +26,7 @@ NumberReaderResult NumberReader_SWAR_V1::operator()(std::span<const char> span) 
   const bool negative = span[0] == '-';
   span = span.subspan(negative);
 
-  auto n = std::bit_cast<uint64_t>(span.first<sizeof(uint64_t)>());
+  auto n = BitCast<uint64_t>(span);
   const auto number_len = FindLowestZeroByte_SWAR{}(n ^ Mask('.')) + 2;
   n <<= (sizeof(uint64_t) - number_len) * CHAR_BIT;
   n >>= 4 * CHAR_BIT;

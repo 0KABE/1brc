@@ -9,12 +9,16 @@
 template <typename>
 class ParserTest : public ::testing::Test {};
 
-using ParserImplementations = ::testing::Types<
-    SingleLineReader_Base,                               //
-    SingleLineReader<FindByte_Base, NumberReader_Base>,  //
-    SingleLineReader<FindByte_Base, NumberReader_SWAR_V1>, SingleLineReader<FindByte_Base, NumberReader_SWAR_V2>,
-    SingleLineReader<FindByte_SWAR, NumberReader_Base>, SingleLineReader<FindByte_SWAR, NumberReader_SWAR_V1>,
-    SingleLineReader<FindByte_SWAR, NumberReader_SWAR_V2>>;
+using ParserImplementations = ::testing::Types<SingleLineReader_Base,                                  //
+                                               SingleLineReader<FindByte_Base, NumberReader_Base>,     //
+                                               SingleLineReader<FindByte_Base, NumberReader_SWAR_V1>,  //
+                                               SingleLineReader<FindByte_Base, NumberReader_SWAR_V2>,  //
+                                               SingleLineReader<FindByte_SWAR, NumberReader_Base>,     //
+                                               SingleLineReader<FindByte_SWAR, NumberReader_SWAR_V1>,  //
+                                               SingleLineReader<FindByte_SWAR, NumberReader_SWAR_V2>,  //
+                                               SingleLineReader<FindByte_STD, NumberReader_Base>,      //
+                                               SingleLineReader<FindByte_STD, NumberReader_SWAR_V1>,   //
+                                               SingleLineReader<FindByte_STD, NumberReader_SWAR_V2>>;
 
 TYPED_TEST_SUITE(ParserTest, ParserImplementations);
 

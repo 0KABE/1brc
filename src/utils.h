@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <cstdint>
+#include <span>
 
 constexpr uint64_t Mask(const char c) {
   constexpr auto bytes = sizeof(uint64_t);
@@ -14,4 +15,11 @@ constexpr uint64_t Mask(const char c) {
     mask = (mask << CHAR_BIT) | c;
   }
   return mask;
+}
+
+template <typename T>
+constexpr T BitCast(const std::span<const char> span) {
+  T v;
+  memcpy(&v, span.data(), sizeof(T));
+  return v;
 }

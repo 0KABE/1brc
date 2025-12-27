@@ -31,3 +31,6 @@ BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V3)->DisplayAggregatesOnl
 BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V4)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V5)->DisplayAggregatesOnly();
 BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V6)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V7)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V8)->DisplayAggregatesOnly();
+BENCHMARK_TEMPLATE(BM_ReadSingleLine, SingleLineReader_V9)->DisplayAggregatesOnly();

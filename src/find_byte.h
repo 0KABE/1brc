@@ -54,7 +54,7 @@ struct FindByte<FindFirstZeroByte, Byte> {
     constexpr auto mask_semicolon = Mask(Byte);
     int size = 0;
     while (size < buffer.size()) {
-      const auto n = std::bit_cast<uint64_t>(buffer.subspan(size).first<sizeof(uint64_t)>());
+      const auto n = BitCast<size_t>(buffer.subspan(size));
       if (const auto index = FindFirstZeroByte{}(n ^ mask_semicolon); index < sizeof(uint64_t)) {
         size += index;
         return size;
