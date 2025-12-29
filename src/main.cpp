@@ -1,38 +1,29 @@
 //
-// Created by Chen, WenTao on 2025/9/6.
+// Created by Chen, WenTao on 2025/11/2.
 //
-#include <benchmark/benchmark.h>
 
-#include "parallel/memory_contiguous_allocator.h"
-#include "parallel/mutex_free_contiguous_allocator.h"
-#include "parallel/mutex_free_worker_v1.h"
-#include "utils/env.h"
+#include <fmt/format.h>
+
+#include <algorithm>
+
+#include "env.h"
+#include "file_memory_map.h"
+#include "parallelizer.h"
 
 int main() {
-  const Env &env = Env::Instance();
-  const auto memory_map = FileMemoryMap(env.input_file);
-  auto allocator = ContiguousAllocator<true>(static_cast<ContiguousAllocator<true>::Buffer>(memory_map));
+  const FileMemoryMap file(Env::Instance().input_file);
+  Parallelizer parallelizer(Env::Instance().threads, 1 << 21, static_cast<std::span<const char>>(file));
+  const auto result = parallelizer.Process();
 
-  std::vector<std::thread> threads;
-  std::atomic_size_t file_size{0};
+  auto v = result | std::ranges::to<std::vector<StatisticsMap::KV>>();
+  std::ranges::sort(v, {}, &StatisticsMap::KV::key);
 
-  for (auto i = 0; i < env.threads; ++i) {
-    threads.emplace_back([&] {
-      size_t size = 0;
-      while (!allocator.Empty()) {
-        auto buffer = allocator.Allocate(1 << 24);
-        for (auto c : buffer) {
-          benchmark::DoNotOptimize(c);
-        }
-        size += buffer.size();
-      }
-      file_size += size;
-    });
+  fmt::print("{{");
+  for (const auto& [key, statistics] : v) {
+    fmt::print("{}={:.1f}/{:.1f}/{:.1f} ", key.name, statistics.min / 10.0,
+               static_cast<double>(statistics.sum) / statistics.count / 10.0, statistics.max / 10.0);
   }
+  fmt::print("}}");
 
-  for (auto &thread : threads) {
-    thread.join();
-  }
-
-  std::println("thread: {}, file size: {}", env.threads, file_size.load());
+  return 0;
 }

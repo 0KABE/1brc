@@ -6,9 +6,11 @@
 
 #include <sys/file.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include <cassert>
 #include <filesystem>
+#include <span>
 
 struct FileMemoryMap {
   int fd{-1};

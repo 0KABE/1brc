@@ -4,27 +4,44 @@ project(1brc)
 
 find_package(GTest)
 find_package(benchmark)
+find_package(fmt)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-march=native)
+add_compile_options(-march=native -Wall)
 
-include_directories(src)
-
-add_executable(${PROJECT_NAME}_parse_station_v2 src/parse_station_v2_main.cpp)
-target_link_libraries(${PROJECT_NAME}_parse_station_v2 benchmark::benchmark_main)
-
-add_executable(${PROJECT_NAME}_parse_station_v3 src/parse_station_v3_main.cpp)
-target_link_libraries(${PROJECT_NAME}_parse_station_v3 benchmark::benchmark_main)
-
-add_executable(${PROJECT_NAME}_main src/main.cpp)
-target_link_libraries(${PROJECT_NAME}_main benchmark::benchmark_main)
-
-add_executable(benchmark
-        benchmark/parse_number_test.cpp
-        benchmark/parse_station_test.cpp
-        benchmark/parallel_test.cpp
+# Core Lib
+add_library(${PROJECT_NAME}_core
+        src/single_line_reader.cpp
+        src/multi_line_reader.cpp
+        src/number_reader.cpp
+        src/allocator.cpp
+        src/parallelizer.cpp
 )
-target_link_libraries(benchmark benchmark::benchmark_main)
-target_include_directories(benchmark PRIVATE src)
+target_include_directories(${PROJECT_NAME}_core PUBLIC src)
+target_link_libraries(${PROJECT_NAME}_core PUBLIC fmt::fmt)
+
+# Executor
+add_executable(${PROJECT_NAME}_main src/main.cpp)
+target_link_libraries(${PROJECT_NAME}_main ${PROJECT_NAME}_core benchmark::benchmark_main)
+
+# Test Code
+add_executable(${PROJECT_NAME}_test
+        test/main.cpp
+        test/parser_test.cpp
+        test/multi_line_reader_test.cpp
+        test/allocator_test.cpp
+        test/parallelizer_test.cpp
+)
+target_include_directories(${PROJECT_NAME}_test PRIVATE src)
+target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME}_core GTest::gtest)
+
+# Benchmark
+add_executable(${PROJECT_NAME}_benchmark
+        benchmark/basic_benchmark.cpp
+        benchmark/parser_benchmark.cpp
+        benchmark/single_line_benchmark.cpp
+        benchmark/hash_benchmark.cpp
+)
+target_link_libraries(${PROJECT_NAME}_benchmark ${PROJECT_NAME}_core benchmark::benchmark_main)
