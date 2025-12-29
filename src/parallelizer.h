@@ -35,13 +35,8 @@ class Parallelizer {
           }
 
           std::lock_guard _(mutex);
-          // auto all_statistics = reader.GetStatistics().bucket |
-          //                       std::views::filter([](const auto& item) { return item.used; }) |
-          //                       std::views::transform([](const auto& item) {
-          //                         return std::tuple<StationName, Statistics>{item.key, item.value};
-          //                       });
-          for (const auto& [name, statistics] : reader.GetStatistics()) {
-            auto& [min, max, count, sum] = result[name];
+          for (const auto& [key, statistics] : reader.GetStatistics()) {
+            auto& [min, max, count, sum] = result[key];
             min = std::min(min, statistics.min);
             max = std::max(max, statistics.max);
             count += statistics.count;
@@ -83,13 +78,8 @@ class ParallelizerV2 {
           }
 
           std::lock_guard _(mutex);
-          // auto all_statistics = reader.GetStatistics().bucket |
-          //                       std::views::filter([](const auto& item) { return item.used; }) |
-          //                       std::views::transform([](const auto& item) {
-          //                         return std::tuple<StationName, Statistics>{item.key, item.value};
-          //                       });
-          for (const auto& [name, statistics] : reader.GetStatistics()) {
-            auto& [min, max, count, sum] = result[name];
+          for (const auto& [key, statistics] : reader.GetStatistics()) {
+            auto& [min, max, count, sum] = result[key];
             min = std::min(min, statistics.min);
             max = std::max(max, statistics.max);
             count += statistics.count;
