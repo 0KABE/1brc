@@ -18,10 +18,12 @@ int main() {
   auto v = result | std::ranges::to<std::vector<StatisticsMap::KV>>();
   std::ranges::sort(v, {}, &StatisticsMap::KV::key);
 
+  fmt::print("{{");
   for (const auto& [key, statistics] : v) {
     fmt::print("{}={:.1f}/{:.1f}/{:.1f} ", key.name, statistics.min / 10.0,
                static_cast<double>(statistics.sum) / statistics.count / 10.0, statistics.max / 10.0);
   }
+  fmt::print("}}");
 
   return 0;
 }
