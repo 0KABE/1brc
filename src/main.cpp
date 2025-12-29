@@ -15,10 +15,9 @@ int main() {
   Parallelizer parallelizer(Env::Instance().threads, 1 << 21, static_cast<std::span<const char>>(file));
   const auto result = parallelizer.Process();
 
-  // for (const auto& [name, statistics] : result) {
-  //   fmt::print("{}={}/{}/{} ", name, statistics.min / 10.0, statistics.max / 10.0,
-  //              statistics.sum / statistics.count / 10.0);
-  // }
+  for (const auto& [key, value] : result) {
+    fmt::print("{}={}/{}/{} ", key.name, value.min / 10.0, value.max / 10.0, value.sum / value.count / 10);
+  }
 
   return 0;
 }
