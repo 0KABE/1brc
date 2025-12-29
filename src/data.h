@@ -22,6 +22,7 @@ struct StationName {
   // StationName(const std::string_view name) : hash(SimpleHash(name)), name(name) {}
 
   bool operator==(const StationName& other) const { return hash == other.hash; }
+  auto operator<=>(const StationName& other) const { return name <=> other.name; }
 };
 
 struct Entity {
