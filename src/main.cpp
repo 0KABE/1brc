@@ -8,8 +8,6 @@
 #include "file_memory_map.h"
 #include "parallelizer.h"
 
-class Reader {};
-
 int main() {
   const FileMemoryMap file(Env::Instance().input_file);
   Parallelizer parallelizer(Env::Instance().threads, 1 << 21, static_cast<std::span<const char>>(file));
