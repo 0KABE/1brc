@@ -14,5 +14,5 @@ TEST(Parallelizer, Base) {
   const FileMemoryMap file(Env::Instance().input_file);
   Parallelizer parallelizer(Env::Instance().threads, 1 << 21, static_cast<std::span<const char>>(file));
   const auto result = parallelizer.Process();
-  EXPECT_GT(result.size(), 0);
+  EXPECT_NE(result.begin(), result.end());
 }
